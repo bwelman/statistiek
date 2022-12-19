@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="nl" xml:lang="nl"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.280">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Statistiek met R - 2&nbsp; Kansverdelingen</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./variabelen.html" rel="next">
+<link href="./kansrekenen.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "Geen resultaten",
+    "search-matching-documents-text": "Gevonden documenten",
+    "search-copy-link-title": "Kopieer link om te zoeken",
+    "search-hide-matches-text": "Extra overeenkomsten verbergen",
+    "search-more-match-text": "meer overeenkomst in dit document",
+    "search-more-matches-text": "meer overeenkomsten in dit document",
+    "search-clear-button-title": "Wissen",
+    "search-detached-cancel-button-title": "Annuleren",
+    "search-submit-button-title": "Verzenden"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Kansverdelingen</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Statistiek met R</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Inleiding</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./kansrekenen.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Kansrekening</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./kansverdelingen.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Kansverdelingen</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./variabelen.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Variabelen</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./toetsen.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Toetsen</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./z-toets.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Z-Toets</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./t-toets.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">t-toets</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./f-toets.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">F-Toets</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chikwadraat.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Chi-Kwadraat toets</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./driehoekstest.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Driehoekstest</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./likelihood.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Maximum Likelihood</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./eda.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Exploratieve Data Analyse (EDA)</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./datasplit.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Data splitsen</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./kde.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Kernel Density Estimation</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./referenties.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Referenties</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Bijlagen</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./normale-verdeling.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Normale verdeling</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Inhoudsopgave</h2>
+   
+  <ul>
+  <li><a href="#sec-verd-dichtheid" id="toc-sec-verd-dichtheid" class="nav-link active" data-scroll-target="#sec-verd-dichtheid"><span class="toc-section-number">2.1</span>  Kans(dichtheid)functie en Verdelingsfunctie</a></li>
+  <li><a href="#sec-verd-functies" id="toc-sec-verd-functies" class="nav-link" data-scroll-target="#sec-verd-functies"><span class="toc-section-number">2.2</span>  Verdelingsfuncties in R</a>
+  <ul class="collapse">
+  <li><a href="#sec-verd-bernoulli" id="toc-sec-verd-bernoulli" class="nav-link" data-scroll-target="#sec-verd-bernoulli"><span class="toc-section-number">2.2.1</span>  Bernoulli verdeling</a></li>
+  <li><a href="#sec-verd-binomiaal" id="toc-sec-verd-binomiaal" class="nav-link" data-scroll-target="#sec-verd-binomiaal"><span class="toc-section-number">2.2.2</span>  Binomiale verdeling</a></li>
+  <li><a href="#sec-verd-poisson" id="toc-sec-verd-poisson" class="nav-link" data-scroll-target="#sec-verd-poisson"><span class="toc-section-number">2.2.3</span>  Poisson verdeling</a></li>
+  <li><a href="#sec-verd-normaal" id="toc-sec-verd-normaal" class="nav-link" data-scroll-target="#sec-verd-normaal"><span class="toc-section-number">2.2.4</span>  Normale verdeling</a></li>
+  <li><a href="#sec-verd-uniform" id="toc-sec-verd-uniform" class="nav-link" data-scroll-target="#sec-verd-uniform"><span class="toc-section-number">2.2.5</span>  Uniforme verdeling</a></li>
+  <li><a href="#sec-verd-exponentieel" id="toc-sec-verd-exponentieel" class="nav-link" data-scroll-target="#sec-verd-exponentieel"><span class="toc-section-number">2.2.6</span>  (Negatief) Exponentiële verdeling</a></li>
+  <li><a href="#sec-verd-chikwadraat" id="toc-sec-verd-chikwadraat" class="nav-link" data-scroll-target="#sec-verd-chikwadraat"><span class="toc-section-number">2.2.7</span>  Chi-kwadraat verdeling</a></li>
+  <li><a href="#sec-verd-t" id="toc-sec-verd-t" class="nav-link" data-scroll-target="#sec-verd-t"><span class="toc-section-number">2.2.8</span>  t verdeling</a></li>
+  <li><a href="#sec-verd-beta" id="toc-sec-verd-beta" class="nav-link" data-scroll-target="#sec-verd-beta"><span class="toc-section-number">2.2.9</span>  Beta verdeling</a></li>
+  <li><a href="#sec-verd-lognormaal" id="toc-sec-verd-lognormaal" class="nav-link" data-scroll-target="#sec-verd-lognormaal"><span class="toc-section-number">2.2.10</span>  Lognormale verdeling</a></li>
+  </ul></li>
+  <li><a href="#sec-verd-standaardiseren" id="toc-sec-verd-standaardiseren" class="nav-link" data-scroll-target="#sec-verd-standaardiseren"><span class="toc-section-number">2.3</span>  Standaardiseren</a></li>
+  <li><a href="#sec-verd-normaliteit" id="toc-sec-verd-normaliteit" class="nav-link" data-scroll-target="#sec-verd-normaliteit"><span class="toc-section-number">2.4</span>  Normaliteit toetsing</a>
+  <ul class="collapse">
+  <li><a href="#sec-verd-norm-visual" id="toc-sec-verd-norm-visual" class="nav-link" data-scroll-target="#sec-verd-norm-visual"><span class="toc-section-number">2.4.1</span>  Visuele controle</a></li>
+  <li><a href="#sec-verd-norm-test" id="toc-sec-verd-norm-test" class="nav-link" data-scroll-target="#sec-verd-norm-test"><span class="toc-section-number">2.4.2</span>  Normaliteitstest</a></li>
+  </ul></li>
+  <li><a href="#sec-verd-kwantielen" id="toc-sec-verd-kwantielen" class="nav-link" data-scroll-target="#sec-verd-kwantielen"><span class="toc-section-number">2.5</span>  Kwantielen</a>
+  <ul class="collapse">
+  <li><a href="#sec-verd-kwantielen-excel" id="toc-sec-verd-kwantielen-excel" class="nav-link" data-scroll-target="#sec-verd-kwantielen-excel"><span class="toc-section-number">2.5.1</span>  Kwantielen in Excel</a></li>
+  </ul></li>
+  <li><a href="#verd-symmetrie" id="toc-verd-symmetrie" class="nav-link" data-scroll-target="#verd-symmetrie"><span class="toc-section-number">2.6</span>  Scheefheid en Kurtosis</a>
+  <ul class="collapse">
+  <li><a href="#sec-verd-sym-scheefheid" id="toc-sec-verd-sym-scheefheid" class="nav-link" data-scroll-target="#sec-verd-sym-scheefheid"><span class="toc-section-number">2.6.1</span>  Scheefheid</a></li>
+  <li><a href="#sec-verd-sym-kurtosis" id="toc-sec-verd-sym-kurtosis" class="nav-link" data-scroll-target="#sec-verd-sym-kurtosis"><span class="toc-section-number">2.6.2</span>  Kurtosis</a></li>
+  <li><a href="#sec-verd-sym-oefeningen" id="toc-sec-verd-sym-oefeningen" class="nav-link" data-scroll-target="#sec-verd-sym-oefeningen"><span class="toc-section-number">2.6.3</span>  Oefeningen</a></li>
+  </ul></li>
+  <li><a href="#sec-verd-fitdistr" id="toc-sec-verd-fitdistr" class="nav-link" data-scroll-target="#sec-verd-fitdistr"><span class="toc-section-number">2.7</span>  Geschikte verdeling zoeken</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-verdelingen" class="quarto-section-identifier d-none d-lg-block"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Kansverdelingen</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>Een kansverdeling is de theoretische tegenhanger van de waargenomen frequentieverdeling. Een frequentieverdeling laat zien hoe vaak een bepaalde waarde/gebeurtenis is voorgekomen Een kansverdeling zegt hoe vaak het had moeten voorkomen.</p>
+<section id="sec-verd-dichtheid" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="sec-verd-dichtheid"><span class="header-section-number">2.1</span> Kans(dichtheid)functie en Verdelingsfunctie</h2>
+<p>Zowel bij discrete kansvariabelen <span class="math inline">\(\underline{k}\)</span> als continue kansvariabelen <span class="math inline">\(\underline{x}\)</span> heb je een verzameling van uitkomsten die bestaat uit reële getallen. De beschrijving van de kansen op de diverse uitkomsten heet de <em>kansfunctie</em> (in het discrete geval) of de <em>kansdichtheid</em> (in het continue geval). Soms kan het handig zijn om te rekenen met cumulatieve kansen, dan wordt gewerkt met de <em>(cumulatieve) verdelingsfunctie</em>.</p>
+<p>Engelstalig:</p>
+<ul>
+<li>PDF = Probability Density Function (kansdichtheidfunctie)</li>
+<li>CDF = cumulative distribution function (verdelingsfunctie)</li>
+<li>Q(p) = Quantile function</li>
+</ul>
+<p><strong>discrete variabelen</strong></p>
+<ul>
+<li>kansvariabele <span class="math inline">\(\underline{k}\)</span></li>
+<li>kansfunctie <span class="math inline">\(f(k) = P(\underline{k} = k)\)</span></li>
+<li>verdelingsfunctie <span class="math inline">\(F(k) = P(\underline{k} \le k)\)</span></li>
+</ul>
+<p><strong>continue variabelen</strong></p>
+<ul>
+<li>kansvariabele <span class="math inline">\(\underline{x}\)</span></li>
+<li>kansdichtheid <span class="math inline">\(f(x)\)</span></li>
+<li>verdelingsfunctie <span class="math inline">\(F(x) = \int_{-\infty}^{x}f(y)dy\)</span></li>
+</ul>
+<p>De cumulatieve kansverdeling <span class="math inline">\(F(x)\)</span> wordt berekend als de integraal van de kansdichtheid <span class="math inline">\(f(x)\)</span>. Omgekeerd kan de kansdichtheid berekend worden als de afgeleide van de verdelingsfunctie: <span class="math inline">\(f(x) = F'(x)\)</span></p>
+</section>
+<section id="sec-verd-functies" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="sec-verd-functies"><span class="header-section-number">2.2</span> Verdelingsfuncties in R</h2>
+<p>R heeft standaard functies voor de meeste kansverdelingen. Voor elke kansverdeling zijn steeds vier functies beschikbaar die steeds beginnen met een van de volgende voorvoegsels: d, p, q of r:</p>
+<ul>
+<li><strong>d</strong> : kansdichtheidsfunctie (PDF), geeft de kans op waarde x.</li>
+<li><strong>p</strong> : Cumulatieve verdelingsfunctie (CDF), geeft de kans op een waarde &lt;= x.</li>
+<li><strong>q</strong> : Inverse cumulatieve kansfunctie (quantile function), geeft de waarde behorend bij een kans &lt;= p% (kwantiel)</li>
+<li><strong>r</strong> : Genereert random getallen uit de verdeling</li>
+</ul>
+<p>De functienamen bestaan uit een voorvoegsel (d, p, q, r) en een achtervoegsel welke de desbetreffende verdeling aangeeft.</p>
+<table class="table">
+<colgroup>
+<col style="width: 31%">
+<col style="width: 25%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Discrete verdeling</th>
+<th style="text-align: left;">R naam</th>
+<th style="text-align: left;">Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Binomiaal</td>
+<td style="text-align: left;">binom</td>
+<td style="text-align: left;">n = aantal trekkingen; p = kans op succes voor een trekking</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Geometrisch</td>
+<td style="text-align: left;">geom</td>
+<td style="text-align: left;">p = kans op succes voor een trekking</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hypergeometrisch</td>
+<td style="text-align: left;">hyper</td>
+<td style="text-align: left;">m = aantal witte ballen in de pot; n = aantal zwarte ballen in de pot; k = aantal trekkingen</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Negatief binomiaal (NegBinomial)</td>
+<td style="text-align: left;">nbinom</td>
+<td style="text-align: left;">size = aantal succesvolle trekkingen; of prob = kans op succes of mu = gemiddelde</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Poisson</td>
+<td style="text-align: left;">pois</td>
+<td style="text-align: left;">lambda = gemiddelde</td>
+</tr>
+</tbody>
+</table>
+<table class="table">
+<colgroup>
+<col style="width: 31%">
+<col style="width: 25%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Continue verdeling</th>
+<th style="text-align: left;">R naam</th>
+<th style="text-align: left;">Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Beta</td>
+<td style="text-align: left;">beta</td>
+<td style="text-align: left;">a (vorm 1); b (vorm 2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cauchy</td>
+<td style="text-align: left;">cauchy</td>
+<td style="text-align: left;">location; scale</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Chikwadraat (Chisquare)</td>
+<td style="text-align: left;">chisq</td>
+<td style="text-align: left;">df = aantal vrijheidsgraden</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">(Negatief) Exponentieel</td>
+<td style="text-align: left;">exp</td>
+<td style="text-align: left;">rate (snelheid)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">F</td>
+<td style="text-align: left;">f</td>
+<td style="text-align: left;">df1 en df2 = aantal vrijheidsgraden</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Gamma</td>
+<td style="text-align: left;">gamma</td>
+<td style="text-align: left;">rate; of rate of scale</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Log-normal (Lognormal)</td>
+<td style="text-align: left;">lnorm</td>
+<td style="text-align: left;">meanlog = gemiddelde; sdlog = standaardafwijking (beide op logaritmische schaal)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Logistisch</td>
+<td style="text-align: left;">logis</td>
+<td style="text-align: left;">location; scale</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Normaal</td>
+<td style="text-align: left;">norm</td>
+<td style="text-align: left;">mean = gemiddelde; sd = standaardafwijking</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Student’s t (TDist)</td>
+<td style="text-align: left;">t</td>
+<td style="text-align: left;">df = aantal vrijheidsgraden</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Uniform</td>
+<td style="text-align: left;">unif</td>
+<td style="text-align: left;">min = ondergrens; max = bovengrens</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Weibull</td>
+<td style="text-align: left;">weibull</td>
+<td style="text-align: left;">shape; scale</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Wilcoxon</td>
+<td style="text-align: left;">wilcox</td>
+<td style="text-align: left;">m = aantal waarnemingen in eerste steekproef; n = aantal waarnemingen in tweede steekproef</td>
+</tr>
+</tbody>
+</table>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Belangrijk
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Belangrijk, zet bij het genereren van random getallen altijd eerst <code>set.seed()</code> wanneer de random getallen gereproduceerd moet kunnen worden. Voor goede uitleg zie ook <a href="http://www.stat.umn.edu/geyer/old/5101/rlook.html">Probability Distributions in R (Stat 5101, Geyer)</a>.</p>
+</div>
+</div>
+<section id="sec-verd-bernoulli" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="sec-verd-bernoulli"><span class="header-section-number">2.2.1</span> Bernoulli verdeling</h3>
+<p>Dit is een discrete kansverdeling die een experiment beschrijft met als enige uitkomsten succes of mislukking. Hierbij neemt de kansvariabele <span class="math inline">\(X\)</span> de waarde 1 aan bij succes en 0 bij mislukking. Een voorbeeld is het opgooien van een munt, met <span class="math inline">\(p\)</span> als de kans op succes (bijvoorbeeld kop boven).</p>
+<p><span class="math inline">\(P(X = 1) = p\)</span> en <span class="math inline">\(P(X = 0) = 1 - p\)</span></p>
+<p>De kansfunctie kan ook geschreven worden als</p>
+<p><span class="math display">\[
+f(k;p)= \left \{ \begin{array}{ll}
+        p &amp; \mbox{als $k = 1$}\\
+      1-p &amp; \mbox{als $k = 0$}\\
+        0 &amp; \mbox{anders} \end{array}
+\right \}
+\]</span></p>
+<p>Deze uitdrukking kan ook geschreven worden als</p>
+<p><span class="math inline">\(f(k;p) = pk+(1-p)(1-k)\)</span> voor <span class="math inline">\(k \in \{0,1\}\)</span></p>
+<p>Verwachtingswaarde = <span class="math inline">\(E(X) = p\)</span> en variantie = <span class="math inline">\(Var(X) = p(1-p)\)</span>.</p>
+<p>Als je een Bernoulli experiment meerdere malen na elkaar uitvoert, dan heet dat een binomiaal kansexperiment. Als <span class="math inline">\(X_1, X_2, ..., X_n\)</span> onafhankelijke, identiek verdeelde kansvariabelen zijn, die alle Bernoulli verdeeld zijn met kans op succes <span class="math inline">\(p\)</span>, dan is <span class="math inline">\(Y = \sum_{k=1}^{n} X_k\)</span> een binomiaal verdeelde variabele met parameters <span class="math inline">\(n\)</span> en <span class="math inline">\(p\)</span>.</p>
+<p>Basis R heeft geen functies voor Bernoulli verdelingen. Deze zijn wel beschikbaar in package <code>Rlab</code> als <code>dbern</code>, <code>pbern</code>, <code>qbern</code> en <code>rbern</code>.</p>
+<div id="exm-verd-bernoulli" class="theorem example">
+<p><span class="theorem-title"><strong>Voorbeeld 2.1 </strong></span>Genereer 20 random getallen uit een Bernoulli verdeling met kans op succes 0,3.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">25</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>Rlab<span class="sc">::</span><span class="fu">rbern</span>(<span class="at">n=</span><span class="dv">20</span>, <span class="at">prob=</span><span class="fl">0.3</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 0 0 0 1 0 1 0 0 0 0 0 0 1 0 0 0 0 1 0 1</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Je zou dit in standaard R kunnen nabootsen met de functie <code>sample</code>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">25</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">size =</span> <span class="dv">20</span>, <span class="at">replace=</span>T, <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.3</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 0 0 0 1 0 1 0 0 0 0 0 0 1 0 0 0 0 1 0 1</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section>
+<section id="sec-verd-binomiaal" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="sec-verd-binomiaal"><span class="header-section-number">2.2.2</span> Binomiale verdeling</h3>
+<p>De binominale (bi = twee, nominaal = categorieën) verdeling is een <em>verdeling van het aantal successen</em> in een reeks van <span class="math inline">\(n\)</span> onafhankelijke Bernoulli experimenten. Voor <span class="math inline">\(n=1\)</span> is de verdeling gelijk aan een Bernoulli verdeling.</p>
+<p>Een <strong>Bernoulli</strong> variabele is een variabele met twee mogelijke uitkomsten:</p>
+<ul>
+<li>succes (= 1) met kans <span class="math inline">\(p\)</span></li>
+<li>geen succes (= 0) met kans <span class="math inline">\(q = 1-p\)</span></li>
+</ul>
+<p>Een <strong>binomiale</strong> verdeling is de som van een aantal (n) <em>onafhankelijke</em> en <em>identiek verdeelde</em> Bernoulli variabelen.</p>
+<p>Voor n trekkingen met kansvariabele X geldt</p>
+<ul>
+<li>notatie: <span class="math inline">\(X \sim B(n, p)\)</span></li>
+<li>Verwachting: <span class="math inline">\(E(X) = np\)</span></li>
+<li>Variantie: <span class="math inline">\(Var(X) = np(1-p)\)</span></li>
+<li>kansfunctie: <span class="math inline">\(f(k;n,p) = P(X = k) = \binom{n}{k} p^k(1-p)^{n-k}\)</span></li>
+</ul>
+<div id="exm-verd-binomiaal" class="theorem example">
+<p><span class="theorem-title"><strong>Voorbeeld 2.2 </strong></span>Er wordt 10 keer geworpen met een eerlijke munt. Wat is de kans op een bepaald aantal keren kop? In de volgende figuur is dit experiment 10.000 keer gesimuleerd.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-binom" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-binom-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.1: Kans van het aantal keren kop bij 10 worpen.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<p><strong>R-Functies</strong>: <code>dbinom(), pbinom(), qbinom(), rbinom()</code></p>
+<section id="dbinom" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="dbinom">dbinom</h4>
+<p><code>dbinom(x ,size = n, prob = p)</code> geeft de kans op <code>x</code> successen bij <code>n</code> experimenten waarbij <code>p</code> de met kans op succes is.</p>
+<div id="exm-dbinom" class="theorem example">
+<p><span class="theorem-title"><strong>Voorbeeld 2.3 </strong></span>Bij 2 worpen met een eerlijk muntstuk (dus p = 0.5) zijn de mogelijke uitkomsten: kop-kop, kop-munt, munt-kop, munt-munt. De kans op succes (kop) is 0.5 Dit geeft</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dbinom</span>(x, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">prob =</span> <span class="fl">0.5</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.25 0.50 0.25</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Dus</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>x (aantal kop)</th>
+<th>p (kans)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0.25</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>0.50</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>0.25</td>
+</tr>
+</tbody>
+</table>
+<p>Stel je gooit 10 keer met een eerlijke dobbelsteen. Wat is de kans dat je precies twee keer een zes gooit?</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbinom</span>(<span class="dv">2</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.291</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section>
+<section id="pbinom" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="pbinom">pbinom</h4>
+<p>Wat is de kans op 10 of minder goede antwoorden bij het willekeurig invullen van veertig 4-keuzevragen?</p>
+<div id="exm-pbinom" class="theorem example">
+<p><span class="theorem-title"><strong>Voorbeeld 2.4 </strong></span>Bij het willekeurig invullen van een 4-keuzevraag is de kans op succes (antwoord goed) 0.25 en de kans op geen succes 0.75</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pbinom</span>(<span class="dv">10</span>, <span class="at">size =</span> <span class="dv">40</span>, <span class="at">prob =</span> <span class="fl">0.25</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.584</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section>
+<section id="rbinom" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="rbinom">rbinom</h4>
+<div id="exm-rbinom" class="theorem example">
+<p><span class="theorem-title"><strong>Voorbeeld 2.5 </strong></span>Een school heeft 2000 leerlingen, waarvan 50% meisjes en 50% jongens. Deze leerlingen worden verdeeld over 100 klassen met in elke klas 20 leerlingen. Wat is de kansverdeling van het aantal meisjes in elke klas?</p>
+<p>Dat zijn 100 trekkingen uit een binomiale verdeling met grootte 20 en kans op succes (is meisje) van 0.5</p>
+<div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">30</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>aantalmeisjes <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">size =</span> <span class="dv">20</span>, <span class="at">prob =</span> <span class="fl">0.5</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(aantalmeisjes)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; aantalmeisjes</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4  5  6  7  8  9 10 11 12 13 14 15 16 </span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1  1  7 10 15 16 17 13  7  8  2  2  1</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(aantalmeisjes, <span class="at">main =</span> <span class="st">"Histogram aantal meisjes"</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">barplot</span>(<span class="fu">table</span>(aantalmeisjes), <span class="at">main =</span> <span class="st">"Kolomdiagram aantal meisjes"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="fig-rbinom" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-rbinom-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-rbinom-1.svg" class="img-fluid figure-img" data-ref-parent="fig-rbinom"></p>
+<p></p><figcaption class="figure-caption">(a) Histogram</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-rbinom-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-rbinom-2.svg" class="img-fluid figure-img" data-ref-parent="fig-rbinom"></p>
+<p></p><figcaption class="figure-caption">(b) Kolomdiagram</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.2: Trekkingen uit een binomiale verdeling.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-verd-poisson" class="level3" data-number="2.2.3">
+<h3 data-number="2.2.3" class="anchored" data-anchor-id="sec-verd-poisson"><span class="header-section-number">2.2.3</span> Poisson verdeling</h3>
+<p>Kansfunctie: <span class="math inline">\(f(x) = P(X=x) =e^{-\mu \frac{\mu^x}{x!}}\)</span> voor <span class="math inline">\(x = 0, 1, 2, \dots\)</span></p>
+<p>R-Functies: <code>dnpois()</code>, <code>ppois()</code>, <code>qpois()</code>, <code>rpois()</code></p>
+<p>Een Poisson-verdeling is een soort binomiale verdeling met een grote <span class="math inline">\(n\)</span> en een kleine <span class="math inline">\(p\)</span>. Voorbeeld: aantal verkeersongelukken per dag. Vaak speelt de tijd een rol bij de Poisson-verdeling.</p>
+<ul>
+<li><span class="math inline">\(k \sim Poisson(\mu)\)</span></li>
+<li><span class="math inline">\(E(k) = Var(k) = \mu = \lambda * t\)</span> met <span class="math inline">\(\lambda\)</span> = aantal successen per tijdseenheid.</li>
+</ul>
+<section id="dpois" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="dpois">dpois</h4>
+<p>Stel dat het aantal biefstukken dat in een restaurant per dag besteld wordt een Poisson verdeling met een gemiddelde van 20 volgt. Wat is de kans dat op een dag precies 25 biefstukken besteld worden?</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dpois</span>(<span class="dv">25</span>, <span class="at">lambda =</span> <span class="dv">20</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.0446</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="qpois" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="qpois">qpois</h4>
+<p>Een vervolg op de voorgaande vraag. Wanneer het restaurant aan ten minste 80% van de vraag naar biefstukken wil voldoen, hoeveel biefstukken moeten dan beschikbaar zijn?</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qpois</span>(<span class="fl">0.80</span>, <span class="dv">20</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 24</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="rpois" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="rpois">rpois</h4>
+<p><code>rpois(n, lambda)</code> genereert <span class="math inline">\(n\)</span> trekkingen uit een Poissonverdeling met een verwachtingswaarde <span class="math inline">\(\lambda\)</span>.</p>
+<div id="exm-rpois-1" class="theorem example">
+<p><span class="theorem-title"><strong>Voorbeeld 2.6 </strong></span>&nbsp;</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">35</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rpois</span>(<span class="at">n =</span> <span class="dv">1000</span>, <span class="at">lambda =</span> <span class="dv">4</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(x)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0   1   2   3   4   5   6   7   8   9  10  11  12  13 </span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  12  69 146 197 207 133 114  72  30   9   7   2   1   1</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">barplot</span>(<span class="fu">table</span>(x))</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-rpois1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-rpois1-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.3: 1000 trekkingen uit een Poisson(4) verdeling.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="exm-rpois-2" class="theorem example">
+<p><span class="theorem-title"><strong>Voorbeeld 2.7 </strong></span>Er moeten 100 groepen gemaakt worden, elk bestaande uit 5 getallen uit een Poisson verdeling met een gemiddelde van 10. Hierbij wordt gebruik gemaakt van de functie <code>replicate()</code> die een matrix maakt 100 kolommen en 20 rijen.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">38</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>my_pois <span class="ot">&lt;-</span> <span class="fu">replicate</span>(<span class="dv">100</span>, <span class="fu">rpois</span>(<span class="at">n =</span> <span class="dv">5</span>, <span class="at">lambda =</span> <span class="dv">10</span>))</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>kolomgemiddeldes <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(my_pois)  <span class="co"># kolomgemiddeldes</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(kolomgemiddeldes)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-rpois2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-rpois2-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.4: 100 herhalingen van 5 trekkingen uit een Poisson(10) verdeling.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Opm.: De verdeling begint een beetje op een normale verdeling te lijken (gevolg centrale limietstelling)</p>
+</div>
+</section>
+</section>
+<section id="sec-verd-normaal" class="level3" data-number="2.2.4">
+<h3 data-number="2.2.4" class="anchored" data-anchor-id="sec-verd-normaal"><span class="header-section-number">2.2.4</span> Normale verdeling</h3>
+<p>De normale verdeling geeft de kans weer dat een bepaalde waarde voorkomt voor een continue variabele.</p>
+<p>Kansdichtheid: <span class="math inline">\(f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}(\frac{x - \mu}{\sigma})^2}\)</span></p>
+<p>R-Functies: <code>dnorm()</code>, <code>pnorm()</code>, <code>qnorm()</code>, <code>rnorm()</code></p>
+<section id="dnorm" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="dnorm">dnorm</h4>
+<p>Syntax: <code>dnorm(x, mean=0, sd=1, log=FALSE)</code></p>
+<div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">5</span>, <span class="at">to =</span> <span class="dv">5</span>, <span class="at">length.out =</span> <span class="dv">100</span>) <span class="co"># 100 waarden, lopend van -5 tot 5</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(x)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, f, <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">xlab =</span> <span class="st">"x"</span>, <span class="at">ylab =</span> <span class="st">"f(x)"</span>, <span class="at">main =</span><span class="st">""</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>F <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(x)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, F, <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">xlab =</span> <span class="st">"x"</span>, <span class="at">ylab =</span> <span class="st">"F(x)"</span>, <span class="at">main =</span> <span class="st">""</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="fig-dnorm" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-dnorm-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-dnorm-1.svg" class="img-fluid figure-img" data-ref-parent="fig-dnorm"></p>
+<p></p><figcaption class="figure-caption">(a) Kansdichtheidsfunctie</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-dnorm-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-dnorm-2.svg" class="img-fluid figure-img" data-ref-parent="fig-dnorm"></p>
+<p></p><figcaption class="figure-caption">(b) Cumulatieve verdelingsfunctie</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.5: Normale verdeling</figcaption><p></p>
+</figure>
+</div>
+</div>
+</section>
+<section id="pnorm" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="pnorm">pnorm</h4>
+<p>Syntax: <code>pnorm(x, mean=0, sd=1, lower.tail=TRUE, log.p=FALSE)</code></p>
+<p>Geeft de cumulatieve verdelingsfunctie (CDF). Voor <code>lower.tail = TRUE</code> (defaultwaarde) worden de kansen berekend voor <span class="math inline">\(P(\underline{x} \le x)\)</span> en voor <code>lower.tail = FALSE</code> de kansen <span class="math inline">\(P(\underline{x} \gt x)\)</span>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="dv">0</span>)     <span class="co"># 50% ligt onder het gemiddelde 0</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.5</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="sc">-</span><span class="dv">2</span>)    <span class="co"># 2.3% ligt meer dan 2 standaarddeviaties onder het gemiddelde</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.0228</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="fl">1.96</span>)  <span class="co"># 97.5% ligt dus links van de waarde z=1, dus 2.5% rechts daarvan</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.975</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="fl">1.96</span>) <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="sc">-</span><span class="fl">1.96</span>)       <span class="co"># 95% ligt tussen de waarden z=-1.96 en z=1.96</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.95</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="dv">12</span>, <span class="at">mean =</span> <span class="dv">10</span>, <span class="at">sd =</span> <span class="dv">2</span>, <span class="at">lower.tail =</span> <span class="cn">FALSE</span>) <span class="co"># 15.9% kans op waarde groter dan 12 bij N(10,2)</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.159</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="dv">12</span>, <span class="at">mean =</span> <span class="dv">10</span>, <span class="at">sd =</span> <span class="dv">2</span>)                 <span class="co"># alternatieve manier</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.159</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="qnorm" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="qnorm">qnorm</h4>
+<p>Syntax: <code>qnorm(p, mean=0, sd=1, lower.tail=TRUE, log.p=FALSE)</code></p>
+<p>Met deze functie kun je het kwantiel (percentiel) Q vinden voor elke kans p.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qnorm</span>(<span class="fl">0.5</span>)    <span class="co"># 50% quantiel is de mediaan, hier tevens het gemiddelde</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qnorm</span>(<span class="fl">0.975</span>)  <span class="co"># De waarde bij het 97.5% quantiel</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1.96</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">qnorm</span>(<span class="fl">0.975</span>, <span class="at">lower.tail =</span> <span class="cn">FALSE</span>) <span class="co"># 97.5% ligt boven deze waarde</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -1.96</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="fu">qnorm</span>(<span class="fl">0.025</span>)                     <span class="co"># hetzelfde als voorgaande</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -1.96</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Een illustratie van het 75% quantiel.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Maak een grafiek van de N(0,1) verdeling</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">5</span>, <span class="at">to =</span> <span class="dv">5</span>, <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(x)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>nframe <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x, <span class="at">y =</span> f)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Bereken het 75% quantiel (percentiel)</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>line <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(<span class="fl">0.75</span>)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>xstr <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">"qnorm(0.75) = %1.3f"</span>, line)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Het deel van de N(0,1) verdeling links van het 75% percentiel</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>nframe75 <span class="ot">&lt;-</span> <span class="fu">subset</span>(nframe, nframe<span class="sc">$</span>x <span class="sc">&lt;</span> line)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Maak tekening</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Het grijze gebied is 75% van het oppervlak onder de normaal grafiek</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(nframe, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> nframe75, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">fill =</span> <span class="st">"gray"</span>) <span class="sc">+</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept =</span> line), <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">x =</span> line, <span class="at">y =</span> <span class="dv">0</span>, <span class="at">label =</span> xstr, <span class="at">vjust =</span> <span class="dv">1</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-qnorm2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-qnorm2-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.6: Grafiek van een N(0,1) verdeling met 75% percentiel.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="rnorm" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="rnorm">rnorm</h4>
+<p>Syntax: <code>rnorm(n, mean=0, sd=1</code>)</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># trek 1000 waarden uit een N(0,1) verdeling</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>u <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(u)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -0.610 -0.426 -1.169 -1.532 -0.150 -1.361</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="sec-verd-uniform" class="level3" data-number="2.2.5">
+<h3 data-number="2.2.5" class="anchored" data-anchor-id="sec-verd-uniform"><span class="header-section-number">2.2.5</span> Uniforme verdeling</h3>
+<p>Een verdeling is uniform wanneer elke mogelijke uitkomst een gelijke kans van optreden heeft. Stel je trekt een naam uit een hoed met 12 namen trekken. Elke naam heeft evenveel kans om getrokken te worden (<span class="math inline">\(p = \frac{1}{12}= .0833\)</span>). Als je deze verdeling zou visualiseren, zou het er als volgt uitzien:</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-verd-uniform" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-verd-uniform-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.7: Uniforme verdeling.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Kansdichtheid:</p>
+<ul>
+<li><span class="math inline">\(f(x) = \frac{1}{b-a}\)</span> voor <span class="math inline">\(a \le x \le b\)</span></li>
+<li><span class="math inline">\(f(x) = 0\)</span> voor <span class="math inline">\(x &lt; a\)</span> of <span class="math inline">\(x &gt; b\)</span></li>
+</ul>
+<p>Verdelingsfunctie:</p>
+<ul>
+<li><span class="math inline">\(F(x) = 0\)</span> voor <span class="math inline">\(x &lt; a\)</span></li>
+<li><span class="math inline">\(F(x) = \frac{x-a}{b-a}\)</span> voor <span class="math inline">\(a \le x \le b\)</span></li>
+<li><span class="math inline">\(F(x) = 1\)</span> voor <span class="math inline">\(x &gt; b\)</span></li>
+</ul>
+<p>R-Functies: <code>dunif()</code>, <code>punif()</code>, <code>qunif()</code>, <code>runif()</code></p>
+<section id="runif" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="runif">runif</h4>
+<p><code>runif(n, min=a, max=b)</code> genereert n trekkingen uit een uniforme verdeling op het interval van a tot b.</p>
+</section>
+</section>
+<section id="sec-verd-exponentieel" class="level3" data-number="2.2.6">
+<h3 data-number="2.2.6" class="anchored" data-anchor-id="sec-verd-exponentieel"><span class="header-section-number">2.2.6</span> (Negatief) Exponentiële verdeling</h3>
+<p>Kansdichtheid:</p>
+<ul>
+<li><span class="math inline">\(f(x) = \lambda e^{-\lambda x}\)</span> voor <span class="math inline">\(x \ge 0\)</span> en <span class="math inline">\(\lambda \gt 0\)</span></li>
+<li><span class="math inline">\(f(x) = 0\)</span> voor <span class="math inline">\(x &lt; 0\)</span></li>
+</ul>
+<p>Verdelingsfunctie:</p>
+<ul>
+<li><span class="math inline">\(F(x) = 1 - e^{-\lambda x}\)</span> voor <span class="math inline">\(x \ge 0\)</span></li>
+<li><span class="math inline">\(F(x) = 0\)</span> voor <span class="math inline">\(x &lt; 0\)</span></li>
+</ul>
+<p>R-Functies: <code>dexp()</code>, <code>pexp()</code>, <code>qexp()</code>, <code>rexp()</code></p>
+<section id="pexp" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="pexp">pexp</h4>
+<p>De levensduur van een bepaald type gloeilamp volgt een exponentiële verdeling met een gemiddelde tijd van 24 maanden. Wat is de kans dat een willekeurige gloeilamp binnen de eerste zes maanden kapot gaat? En wat is de kans dat een gloeilamp meer dan 4 jaar (48 maanden) meegaat?</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pexp</span>(<span class="dv">6</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">24</span>)  <span class="co"># kans kapot in eerste 6 maanden</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.221</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">pexp</span>(<span class="dv">48</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">24</span>, <span class="at">lower.tail =</span> <span class="cn">FALSE</span>) <span class="co"># kans op meer dan 4 jaar goed</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.135</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="qexp" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="qexp">qexp</h4>
+<p>Een vervolg op de voorgaande gloeilampvraag. Na hoeveel maanden is 40% van de gloeilampen kapot?</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qexp</span>(<span class="fl">0.4</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">24</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 12.3</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="sec-verd-chikwadraat" class="level3" data-number="2.2.7">
+<h3 data-number="2.2.7" class="anchored" data-anchor-id="sec-verd-chikwadraat"><span class="header-section-number">2.2.7</span> Chi-kwadraat verdeling</h3>
+<p><span class="math inline">\(E_{\chi^2} = 1\)</span> en <span class="math inline">\(var_{\chi^{2}[n]} = 2n\)</span></p>
+<p>R-Functies: <code>dchisq()</code>, <code>pchisq()</code>, <code>qchisq()</code>, <code>rchisq()</code></p>
+<section id="qchisq" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="qchisq">qchisq</h4>
+<p>Beneden welke grens ligt het 95% gebied van een <span class="math inline">\(\chi^{2}[6]\)</span> verdeling?</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qchisq</span>(<span class="at">p =</span> <span class="fl">0.95</span>, <span class="at">df =</span> <span class="dv">6</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 12.6</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="sec-verd-t" class="level3" data-number="2.2.8">
+<h3 data-number="2.2.8" class="anchored" data-anchor-id="sec-verd-t"><span class="header-section-number">2.2.8</span> t verdeling</h3>
+<p>Voor kleine steekproeven uit een normale verdeling met onbekende <span class="math inline">\(\sigma\)</span>. Advies:</p>
+<ul>
+<li>normale verdeling + bekende <span class="math inline">\(\sigma\)</span> -&gt; normale verdeling</li>
+<li>normale verdeling + onbekende <span class="math inline">\(\sigma\)</span>:
+<ul>
+<li><span class="math inline">\(n \le 30\)</span> -&gt; t-verdeling</li>
+<li><span class="math inline">\(n \gt 30\)</span> -&gt; normale verdeling</li>
+</ul></li>
+</ul>
+<p>R-Functies: <code>dt()</code>, <code>pt()</code>, <code>qt()</code>, <code>rt()</code></p>
+</section>
+<section id="sec-verd-beta" class="level3" data-number="2.2.9">
+<h3 data-number="2.2.9" class="anchored" data-anchor-id="sec-verd-beta"><span class="header-section-number">2.2.9</span> Beta verdeling</h3>
+<p>R-Functies: <code>dbeta()</code>, <code>pbeta()</code>, <code>qbeta()</code>, <code>rbeta()</code></p>
+<p>De beta verdeling is een continue kansverdeling gedefinieerd op het interval [0,1] en heeft twee niet negatieve parameters <span class="math inline">\(\alpha\)</span> en <span class="math inline">\(\beta\)</span> die de vorm bepalen. De verdeling wordt o.a. gebruikt bij het modelleren van tijdsuren voor projecten.</p>
+<p><span class="math inline">\(\mu =\frac{\alpha}{\alpha + \beta}\)</span> en <span class="math inline">\(\sigma^2 = \frac{\alpha \beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)}\)</span>.</p>
+<p>Oplossen voor <span class="math inline">\(\alpha\)</span> en <span class="math inline">\(\beta\)</span> geeft</p>
+<p><span class="math inline">\(\alpha = (\frac{1 - \mu}{\sigma^2} - \frac{1}{\mu}) \mu^2\)</span> en <span class="math inline">\(\beta = \alpha (\frac{1}{\mu} - 1)\)</span></p>
+<section id="dbeta" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="dbeta">dbeta</h4>
+<p>Syntax: <code>dbeta(x, shape1, shape2, ncp = 0, log = FALSE)</code></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">by =</span> <span class="fl">0.02</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">dbeta</span>(x, <span class="at">shape1 =</span> <span class="dv">2</span>, <span class="at">shape2 =</span> <span class="dv">5</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, y)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/dbeta1-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="pbeta" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="pbeta">pbeta</h4>
+<p>Syntax: <code>pbeta(q, shape1, shape2, ncp = 0, lower.tail = TRUE, log.p = FALSE)</code></p>
+<p>Als voorbeeld een cumulatieve verdelingsfunctie.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">pbeta</span>(x, <span class="at">shape1 =</span> <span class="dv">2</span>, <span class="at">shape2 =</span> <span class="dv">5</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, y)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/pbeta-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="qbeta" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="qbeta">qbeta</h4>
+<p>Syntax: <code>qbeta(p, shape1, shape2, ncp = 0, lower.tail = TRUE, log.p = FALSE)</code></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">qbeta</span>(x, <span class="at">shape1 =</span> <span class="dv">2</span>, <span class="at">shape2 =</span> <span class="dv">5</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, y)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/qbeta-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="rbeta" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="rbeta">rbeta</h4>
+<p>Syntax: <code>rbeta(n, shape1, shape2, ncp = 0)</code></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">12345</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>aantal <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(<span class="at">n =</span> aantal, <span class="at">shape1 =</span> <span class="dv">1</span>, <span class="at">shape2 =</span> <span class="dv">5</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(x)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.0719 0.0591 0.1923 0.2934 0.0670 0.2374</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(x), <span class="at">main=</span><span class="st">"Beta verdeling"</span>, <span class="at">ylab =</span> <span class="st">"Dichtheid"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-rbeta1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-rbeta1-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.8: <strong>?(caption)</strong></figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-verd-lognormaal" class="level3" data-number="2.2.10">
+<h3 data-number="2.2.10" class="anchored" data-anchor-id="sec-verd-lognormaal"><span class="header-section-number">2.2.10</span> Lognormale verdeling</h3>
+<p>Een lognormale verdeling is een continue kansverdeling van een variabele waarvan de logaritme normaal verdeeld is. Dus als de variabele X lognormaal verdeeld is, dan heeft Y = ln(X) een normale verdeling. Op analoge wijze, als Y een normale verdeling heeft, dan heeft de exponentiële functie van Y, X = exp(Y) een lognormale verdeling.</p>
+<p>Een lognormaal verdeelde variabele heeft alleen positieve waarden. Het is een handig en nuttig model voor metingen in exacte en technische wetenschappen, maar ook in geneeskunde , economie en andere onderwerpen (bijv. energieën, concentraties, lengtes, financiële opbrengsten en andere statistieken).</p>
+<p>R-Functies: <code>dlnorm(</code>), <code>plnorm()</code>, <code>qlnorm()</code>, <code>rlnorm()</code></p>
+</section>
+</section>
+<section id="sec-verd-standaardiseren" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="sec-verd-standaardiseren"><span class="header-section-number">2.3</span> Standaardiseren</h2>
+<p>De <em>Z-score</em> of <em>Z-waarde</em> is de gestandaardiseerde vorm van een variabele en wordt berekend via <span class="math inline">\(z = \frac{x - \mu}{\sigma}\)</span>.</p>
+<p>Om deze waarden te bepalen kun je de functie <code>scale(x)</code> gebruiken. Wanneer je <code>scale(x, scale = FALSE)</code> toepast dan wordt alleen <span class="math inline">\(x - \mu\)</span> berekend, de waarden worden dan gecentreerd.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">10</span>, <span class="at">mean =</span> <span class="dv">50</span>, <span class="at">sd =</span> <span class="dv">5</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(x)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    39.8    45.6    49.9    49.0    52.8    56.7</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(x)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 5.28</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>zx <span class="ot">&lt;-</span> <span class="fu">scale</span>(x)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(zx)</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        V1        </span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Min.   :-1.736  </span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1st Qu.:-0.649  </span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Median : 0.171  </span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Mean   : 0.000  </span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3rd Qu.: 0.721  </span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Max.   : 1.463</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(zx)</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Opmerking
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Bij een dataframe kun je ook gebruiken maken van de functie <code>mutate()</code> uit package <code>dplyr</code> via</p>
+<p><code>mutate(zscore = (variabele - mean(variabele) / sd(variabele))</code></p>
+</div>
+</div>
+</section>
+<section id="sec-verd-normaliteit" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="sec-verd-normaliteit"><span class="header-section-number">2.4</span> Normaliteit toetsing</h2>
+<p>Bij nogal wat statistische methoden wordt er vanuit gegaan dat de dataset een bepaalde statistische verdeling volgt, vaak een normale verdeling. Voordat je met die methode aan de slag gaat moet je wel eerst controleren of deze aanname klopt.</p>
+<section id="sec-verd-norm-visual" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="sec-verd-norm-visual"><span class="header-section-number">2.4.1</span> Visuele controle</h3>
+<section id="histogram" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="histogram">Histogram</h4>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(trees<span class="sc">$</span>Height, <span class="at">xlab =</span> <span class="st">"Hoogte (ft)"</span>, <span class="at">main =</span> <span class="st">"Histogram boomhoogte"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-boomhoogte-histogram" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-boomhoogte-histogram-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.9: Histogram hoogte zwarte kersenbomen</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Histogrammen zijn niet voldoende, vooral niet bij kleine steekproeven (kleiner dan 20)</p>
+</section>
+<section id="dichtheidsgrafiek" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="dichtheidsgrafiek">Dichtheidsgrafiek</h4>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(trees<span class="sc">$</span>Height), <span class="at">main =</span> <span class="st">"Dichtheidsgrafiek"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-boomhoogte-dichtheid" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-boomhoogte-dichtheid-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.10: Dichtheid hoogte zwarte kersenbomen</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="qq-plot" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="qq-plot">QQ plot</h4>
+<p>Om te beoordelen of twee gegevensverzamelingen dezelfde kansverdelingen volgen kun je gebruik maken van een <strong>Quantiel-Quantiel (Q-Q) grafiek</strong>. Dit is in feite een spreidingsdiagram waarin de quantielen van de twee verzamelingen tegen elkaar uitgezet worden. Wanneer de verdelingen gelijke vormen hebben dan liggen deze punten nagenoeg op een rechte lijn. Het is slechts een visuele verificatie en geen volledig bewijs.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqplot</span>(<span class="at">x =</span> <span class="fu">rnorm</span>(<span class="at">n=</span><span class="dv">100</span>, <span class="at">mean =</span> <span class="dv">50</span>, <span class="at">sd =</span> <span class="dv">3</span>), <span class="at">y =</span> <span class="fu">rnorm</span>(<span class="at">n=</span><span class="dv">200</span>, <span class="at">mean =</span> <span class="dv">50</span>, <span class="at">sd =</span> <span class="dv">3</span>))</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-qqplot-normaal" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-qqplot-normaal-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.11: QQ plot van een gegenereerde N(50,3) verdeling.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Twee gegevensverzamelingen met elkaar vergelijken komt niet zo vaak voor. Veel vaker wordt de verdeling van een verzameling (een steekproef) vergeleken met een theoretische verdeling (normale verdeling, …).</p>
+<p><strong>qqnorm</strong></p>
+<p>Voor het vergelijken met een normale verdeling kent R een speciale qqplot functie <code>qqnorm(y)</code>. Hiermee kun je dus visueel beoordelen of de verdeling van de te onderzoeken gegevens op een normale verdeling lijkt.</p>
+<p>R heeft ook een functie <code>qqline(y)</code> die als extra nog een lijn in de qqnorm grafiek tekent. Met deze lijn kun je nog gemakkelijker beoordelen of de verdeling van een normale verdeling afwijkt. Je moet deze opdracht dan wel direct na de qqnorm functie geven.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(trees<span class="sc">$</span>Height)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(trees<span class="sc">$</span>Height, <span class="at">col =</span> <span class="st">"steelblue"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-boomhoogte-qqnorm" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-boomhoogte-qqnorm-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.12: QQ plot voor hoogte zwarte kersenbomen</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>De afwijkingen t.o.v. de lijn zeggen iets over de scheefheid (skew) van de verdeling.</p>
+<div class="info">
+<p>Package <code>car</code> heeft ook een <code>qqPlot()</code> functie die voor een betere visualisatie zorgt.</p>
+</div>
+</section>
+</section>
+<section id="sec-verd-norm-test" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="sec-verd-norm-test"><span class="header-section-number">2.4.2</span> Normaliteitstest</h3>
+<p>Visuele inspectie kan soms onbetrouwbaar zijn. Er zijn ook toetsen beschikbaar om formeel te testen of gegevens een een normale verdeling volgen. Een veel gebruikte toets is <strong>Shapiro-Wilk’s</strong> met de volgende hypotheses:</p>
+<ul>
+<li><span class="math inline">\(H_0\)</span>: de gegevens volgen een normale verdeling</li>
+<li><span class="math inline">\(H_1\)</span>: de gegevens volgen geen normale verdeling</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(trees<span class="sc">$</span>Height)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Shapiro-Wilk normality test</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; data:  trees$Height</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; W = 1, p-value = 0.4</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>De p-waarde is groter dan 0,05, de nulhypothese wordt niet verworpen, de gegevens volgen een normale verdeling.</p>
+<p>Het is belangrijk op te merken dat normaliteitstoetsen in de praktijk vaak als te conservatief worden beschouwd in de zin dat voor een grote steekproef (n&gt; 50) een kleine afwijking van de normaliteit ertoe kan leiden dat de normaliteitsconditie wordt geschonden. Het is een is een hypothesetoetsing, dus naarmate de steekproefomvang toeneemt, neemt hun vermogen om kleinere verschillen te detecteren toe. Dus naarmate het aantal waarnemingen toeneemt, wordt de Shapiro-Wilk-toets zeer gevoelig, zelfs voor een kleine afwijking van de normaliteit. Het kan dus voorkomen dat volgens de toets de gegevens niet normaal verdeeld zijn, terwijl de afwijkingen van de normale verdeling te verwaarlozen zijn. Om deze reden wordt de normaliteitsvoorwaarde vaak geverifieerd op basis van een combinatie van zowel visuele inspectie (met name de QQ grafiek) en een formele toetsing.</p>
+</section>
+</section>
+<section id="sec-verd-kwantielen" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="sec-verd-kwantielen"><span class="header-section-number">2.5</span> Kwantielen</h2>
+<p>Een kwantiel is een getal dat een dataset verdeelt in twee delen, de kleinere en de grotere waarden. Zo geeft het 0,85-kwantiel een verdeling met een fractie 0,85 kleinere waarden en een fractie 0,15 grotere waarden. Deze waarde wordt aangegeven met <span class="math inline">\(Q(0,85)\)</span> Bekend is het 0,5-kwantiel, de mediaan genaamd, die het midden is van een geordende dataset.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Opmerking
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Het concept van kwantiel is nauw verbonden met het concept van <em>percentiel</em>. Wanneer iemand op een toets een percentielscore van 85 heeft, betekent dat 85% van alle deelnemers bij die toets dezelfde of een lagere score heeft en 15% van de deelnemers een hogere score heeft. Het enige verschil tussen percentiel en kwantiel is dat percentiel verwijst naar een percentage van de verzameling gegevens en kwantiel verwijst naar een fractie van de verzameling gegevens.</p>
+</div>
+</div>
+<p>Voor een verzameling van <span class="math inline">\(n\)</span> getallen <span class="math inline">\(x_1, x_2, ..., x_n\)</span>, waaronder mogelijk gelijke, wordt het <span class="math inline">\(p\)</span>-kwantiel <span class="math inline">\(x_p\)</span> bepaald door de eisen:</p>
+<ul>
+<li>ten minste <span class="math inline">\(pn\)</span> van de data zijn kleiner dan of gelijk aan <span class="math inline">\(x_p\)</span>.</li>
+<li>ten minste <span class="math inline">\((1-p)n\)</span> van de data zijn groter dan of gelijk aan <span class="math inline">\(x_p\)</span>.</li>
+</ul>
+<p>Als twee aangrenzende uitkomsten aan de eisen voldoen, neemt men het gemiddelde van beide als kwantiel.</p>
+<p>Helaas stuit deze definitie op complicaties als je probeert de eigenlijk kwantielen te berekenen voor de waarnemingen in een dataset. Als je bijvoorbeeld het <span class="math inline">\(Q(0,27)\)</span> kwantiel wilt berekenen uit 10 waarnemingen, dan is elke waarneming 10 procent van de hele set, dus je kunt een fractie van 0,2 of 0,3 van de gegevens afsplitsen, maar er is geen waarde die een fractie van precies 0,27 zal afsplitsen. En als je het splitsingspunt precies bij een waarneming zou plaatsen, zou je ook niet weten of je die waarneming in het onderste of bovenste deel moet meetellen.</p>
+<p>Het probleem is dus het berekenen van een kwantiel. Er zijn maar liefst 9 verschillende methodes, R-1 t/m R-9, zie <a href="https://en.wikipedia.org/wiki/Quantile">wikipedia</a>. R ondersteunt ze alle 9, maar Excel slechts twee ervan. Resultaten van softwarepaketten kunnen dus verschillen. Deze problematiek wordt fraai geschetst in <a href="https://analyse-it.com/blog/2013/2/quantiles-percentiles-why-so-many-ways-to-calculate-them">Quantiles, Percentiles: Why so many ways to calculate them?</a>.</p>
+<p>Voor gebruik in Excel zie ook <a href="https://www.real-statistics.com/descriptive-statistics/ranking-function-excel/">Ranking Functions in Excel</a> bij het onderdeel PERCENTILE.</p>
+<p><em>Formule methode R-1</em>: Het <span class="math inline">\(p\)</span>-kwantiel in een geordende verzameling van <span class="math inline">\(n\)</span> elementen is het element met rangnummer <span class="math inline">\(pn + 0,5\)</span></p>
+<p><strong>Voorbeeld 1</strong></p>
+<p>Dataset met 9 waarnemingen: <code>2, 3, 5, 7, 8, 9, 11, 12, 15</code></p>
+<p>Het 0,2-kwantiel is het getal 3. Er zijn 2, dus ten minste 1,8 getallen kleiner dan of gelijk aan 3 en er zijn 8, dus ten minste 7,2 getallen groter dan of gelijk aan 3.</p>
+<p>En volgens methode 2</p>
+<ul>
+<li>0,2 kwantiel, 9*1/5 = 1,8 -&gt; rangnummer 2. Dit is het getal 3</li>
+<li>0,4 kwantiel, 9*2/5 = 3,6 -&gt; rangnummer 4. Dit is het getal 7</li>
+<li>0,6 kwantiel, 9*3/5 = 5,4 -&gt; rangnummer 6. Dit is het getal 9</li>
+<li>0,8 kwantiel, 9*4/5 = 7,2 -&gt; rangnummer 8. Dit is het getal 12</li>
+</ul>
+<p>Zo heet het 0,25-kwantiel ook het <span class="math inline">\(1^{ste}\)</span>-kwartiel en het <span class="math inline">\(25^{ste}\)</span>-percentiel.</p>
+<p><strong>Voorbeeld 2</strong></p>
+<p>Dataset met 10 waarnemingen: <code>2, 3, 5, 7, 8, 9, 11, 12, 15, 20</code></p>
+<p>Voor het 0,2-kwantiel voldoen zowel het getal 3 als 5. Hiervan wordt het gemiddelde genomen, dus 4.</p>
+<p><strong>Speciale kwantielen</strong></p>
+<ul>
+<li>2 delen: mediaan</li>
+<li>4 delen: kwartielen</li>
+<li>10 delen: decielen</li>
+<li>100 delen: percentielen</li>
+</ul>
+<p>Voor het 0,2-kwantiel voldoen zowel het getal 3 als het getal 5. Het 0.2 kwantiel is hier het gemiddelde van, dus het getal 4.</p>
+<section id="sec-verd-kwantielen-excel" class="level3" data-number="2.5.1">
+<h3 data-number="2.5.1" class="anchored" data-anchor-id="sec-verd-kwantielen-excel"><span class="header-section-number">2.5.1</span> Kwantielen in Excel</h3>
+<p>Er is een handige bruikbare definitie voor het berekenen van kwantielen. Er wordt uitgegaan van een verzameling geordende (van klein naar groot gesorteerd) gegevens <span class="math inline">\(Y_i\)</span> met <span class="math inline">\(i = 1,2,...n\)</span>. Voor een fractie <span class="math inline">\(p\)</span> (tussen 0 en 1) wordt het kwantiel <span class="math inline">\(Q(p)\)</span> als volgt gedefinieerd. Neem voor <span class="math inline">\(Q(p)\)</span> de waarde <span class="math inline">\(Y_i\)</span> wanneer <span class="math inline">\(p\)</span> een van de volgende fracties is <span class="math inline">\(p_i = (i - 0,5)/n\)</span>. Dus de kwantielen <span class="math inline">\(Q(p_i)\)</span> van de waarnemingen zijn gelijk aan de geordende waarnemingen <span class="math inline">\(Y_i\)</span> zelf.</p>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Belangrijk
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Je rekent dus niet voor een bepaalde fractie het bijbehorende kwantiel uit, maar je rekent voor elke kwantielwaarde (= de waarneming) de bijbehorende fractie uit.</p>
+</div>
+</div>
+<p><strong>Q-Q plot</strong></p>
+<p>Een Q-Q plot vergelijkt de kwantielen van een dataset met een set kwantielen van een theoretische kansverdeling. Daardoor is een Q-Q plot geschikt om te beoordelen of de verdeling van de dataset lijkt op die van de theoretische verdeling.</p>
+<p>De werkwijze is als volgt</p>
+<ol type="1">
+<li>Bepaal voor elke waarneming (= kwantielwaarde) in de dataset de bijbehorende fractie.</li>
+<li>Bereken voor elke gevonden fractie de bijbehorende kwantielwaarde van de theoretische verdeling uit.</li>
+<li>Zet de kwantielwaarden tegen elkaar uit in een spreidingsdiagram.</li>
+<li>Beoordeel of de punten op een rechte lijn liggen. Hoe beter de punten samenvallen met de rechte lijn, des te meer lijkt de verdeling in de dataset op de theoretische verdeling.</li>
+</ol>
+<p><strong>Voorbeeld</strong></p>
+<p>In de volgende figuur staan 22 waarnemingen <span class="math inline">\(Y_i\)</span> (zie Excelbestand <a href="data/qqplot.xlsx">qqplot.xlsx</a>. Voor elke waarneming is de bijbehorende fractie <span class="math inline">\(p_i\)</span> berekend. Voor B2 is de formule <code>=(A2-0,5)/22</code> welke vervolgens naar beneden gekopieerd is. Daarna is voor elke fractie de bijbehorende waarde in de standaard normale verdeling bepaald. De formule in D2 is <code>=NORM.S.INV(B2)</code> welke weer naar beneden gekopieerd is. Maak vervolgens een spreidingsdiagram waarbij je originele waarnemingen langs de horizontale as plaatst en de waarde uit de normale verdeling langs de verticale as. Breng ook een lineaire trendlijn aan.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-qqplot" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="images/qqplot.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.13: QQ plot voor een serie van 22 waarnemingen.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>De punten liggen redelijk op een rechte lijn zodat er vanuit gegaan kan worden dat de waarnemingen redelijk een normale verdeling volgen.</p>
+</section>
+</section>
+<section id="verd-symmetrie" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="verd-symmetrie"><span class="header-section-number">2.6</span> Scheefheid en Kurtosis</h2>
+<p>Scheefheid en kurtosis zijn twee belangrijke maatstaven in de statistieken. Scheefheid verwijst naar het gebrek aan symmetrie en kurtosis verwijst naar de piek van een verdeling.</p>
+<section id="sec-verd-sym-scheefheid" class="level3" data-number="2.6.1">
+<h3 data-number="2.6.1" class="anchored" data-anchor-id="sec-verd-sym-scheefheid"><span class="header-section-number">2.6.1</span> Scheefheid</h3>
+<p>Kenmerken van een scheve verdeling zijn:</p>
+<ul>
+<li>Gemiddelde, mediaan en modus vallen op verschillende punten.</li>
+<li>Kwartielen liggen niet op gelijke afstand van de mediaan.</li>
+<li>De curve is niet symmetrisch zoals bij een normale verdeling, maar meer naar de ene kant uitgerekt dan naar de andere, heeft een staart.</li>
+</ul>
+<p>Bij een frequentieverdeling kun je drie vormen van de curve aantreffen.</p>
+<ol type="1">
+<li><strong>Symmetrische verdeling</strong></li>
+<li><strong>Rechts scheve verdeling</strong> - Heeft een lange rechterstaart, wat duidt op extreme waarden aan de positieve kant van de verdeling.</li>
+<li><strong>Links scheve verdeling</strong> - Heeft een lange linkerstaart, wat duidt op extreme waarden aan de negatieve kant van de verdeling.</li>
+</ol>
+<p><strong>Voorbeelden rechts scheef</strong></p>
+<ol type="1">
+<li>De verdeling van individuele inkomens is meestal rechts scheef, waarbij de meeste personen minder dan het gemiddelde verdienen, maar met een lange rechterstaart van personen die veel meer verdienen.</li>
+<li>De verdeling van de scores op een bijzonder moeilijk examen zal positief scheef zijn, waarbij de meeste studenten rond een bepaalde gemiddelde waarde scoren en een paar uitschieters die veel hoger scoren.</li>
+<li>De verdeling van de familiegrootte is waarschijnlijk rechts scheef, omdat de meeste families 0-2 kinderen hebben, maar er zijn uitschieters met veel meer kinderen.</li>
+<li>De verdeling van de verkochte tickets per film is rechts scheef, omdat de meeste films matig zijn en relatief weinig totale kaartjes verkopen. Sommige toppertjes verkopen echter zeer veel kaartjes, waardoor de verdeling van bioscoopkaartjes rechts scheef loopt.</li>
+</ol>
+<p><strong>Voorbeelden links scheef</strong></p>
+<ol type="1">
+<li>De verdeling van de leeftijd van overlijden in de meeste populaties is links scheef. De meeste mensen worden tussen de 70 en 80 jaar oud, slechts weinig mensen worden veel ouder.</li>
+<li>De verdeling van scores op gemakkelijke examens of toetsen is vaak negatief scheef omdat de meeste studenten erg hoog scoren, terwijl een paar studenten veel lager scoren dan het gemiddelde.</li>
+<li>In de meeste jaren is de verdeling van de lengtes van het verspringen voor deelnemers aan de Olympische Spelen negatief, omdat de meeste deelnemers een sprong maken van ongeveer 7,5-8 meter, terwijl enkelen een sprong maken van slechts 5-6 meter.</li>
+<li>De verdeling van de dagelijkse beursrendementen is negatief scheef omdat de aandelenmarkt op de meeste dagen een licht positief rendement oplevert, maar af en toe enorme negatieve rendementen op een paar dagen.</li>
+</ol>
+<p>Een <em>beta verdeling</em> kun je goed gebruiken om scheve verdelingen te demonstreren. Het aantal waarden moet je wel voldoende groot nemen, want zowel scheefheid en kurtosis hangen hier behoorlijk vanaf.</p>
+<ul>
+<li><span class="math inline">\(\alpha\)</span> &gt; <span class="math inline">\(\beta\)</span> : Links scheve verdeling (staart links)</li>
+<li><span class="math inline">\(\alpha\)</span> &lt; <span class="math inline">\(\beta\)</span> : Rechts scheve verdeling (staart rechts)</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># definieer reeks</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">length =</span> <span class="dv">100</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co"># parameters beta verdeling</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="co"># maak grafiek</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">bg =</span> <span class="st">"transparent"</span>)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, <span class="fu">dbeta</span>(x, alpha, alpha), <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">ylab =</span> <span class="st">"dichtheid"</span>, <span class="at">col =</span> <span class="st">"green"</span>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, <span class="fu">dbeta</span>(x, beta, alpha), <span class="at">col =</span> <span class="st">"blue"</span>)</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, <span class="fu">dbeta</span>(x, alpha, beta), <span class="at">col =</span> <span class="st">"red"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-scheef1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-scheef1-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.14: Beta verdeling: rechts scheef (blauw), links scheef (rood) en normaal (groen).</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Een andere benadering is door willekeurige waarden uit een betaverdeling te genereren.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>aantal <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">35486</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>xl <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(aantal, alpha, beta) <span class="co"># links scheef</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>xr <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(aantal, beta, alpha) <span class="co"># rechts scheef</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>xs <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(aantal, alpha, alpha) <span class="co"># symmetrisch</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">bg =</span> <span class="st">"transparent"</span>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(xs), <span class="at">col =</span> <span class="st">"green"</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span> <span class="fl">0.1</span>, <span class="fl">1.1</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>),</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">"Scheefheid"</span>, <span class="at">ylab =</span> <span class="st">""</span>, <span class="at">xlab =</span> <span class="st">""</span>, <span class="at">xaxt=</span><span class="st">"n"</span>, <span class="at">yaxt=</span><span class="st">"n"</span>, <span class="at">frame.plot=</span><span class="cn">FALSE</span>)</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">density</span>(xl), <span class="at">col =</span> <span class="st">"red"</span>)</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">density</span>(xr), <span class="at">col =</span> <span class="st">"blue"</span>)</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>,</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"rechts scheef"</span>, <span class="st">"symmetrisch"</span>, <span class="st">"links scheef"</span>),</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"green"</span>, <span class="st">"red"</span>),</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="dv">1</span>,</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">cex =</span> <span class="fl">0.8</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-scheef2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-scheef2-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.15: gegernereerde waarden uit een Beta verdeling.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Gecombineerd met een histogram.</p>
+<div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(xl, <span class="at">probability =</span> <span class="cn">TRUE</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="fu">min</span>(xl), <span class="fu">max</span>(xl)), </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">""</span>, <span class="at">xlab =</span> <span class="st">"x"</span>, <span class="at">ylab =</span> <span class="st">"Dichtheid"</span>)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">density</span>(xl), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(xr, <span class="at">probability =</span> <span class="cn">TRUE</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="fu">min</span>(xr), <span class="fu">max</span>(xr)), </span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">""</span>, <span class="at">xlab =</span> <span class="st">"x"</span>)</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">density</span>(xr), <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="fig-scheef3" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-scheef3-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-scheef3-1.svg" class="img-fluid figure-img" data-ref-parent="fig-scheef3"></p>
+<p></p><figcaption class="figure-caption">(a) Links scheef</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-scheef3-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-scheef3-2.svg" class="img-fluid figure-img" data-ref-parent="fig-scheef3"></p>
+<p></p><figcaption class="figure-caption">(b) Rechts scheef</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.16: Dichtheid met histogram voor scheve verdelingen.</figcaption><p></p>
+</figure>
+</div>
+</div>
+<p><strong>ggplot</strong></p>
+<div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(xl, xr, xs)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(xr)) <span class="sc">+</span> </span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span> <span class="fu">theme_classic</span>() <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"dichtheid"</span>)</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(xs)) <span class="sc">+</span> </span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span> <span class="fu">theme_classic</span>() <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"dichtheid"</span>)</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(xl)) <span class="sc">+</span> </span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span> <span class="fu">theme_classic</span>() <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"dichtheid"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="fig-scheef4" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 33.3%;justify-content: center;">
+<div id="fig-scheef4-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-scheef4-1.svg" class="img-fluid figure-img" data-ref-parent="fig-scheef4"></p>
+<p></p><figcaption class="figure-caption">(a) Rechts scheef</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 33.3%;justify-content: center;">
+<div id="fig-scheef4-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-scheef4-2.svg" class="img-fluid figure-img" data-ref-parent="fig-scheef4"></p>
+<p></p><figcaption class="figure-caption">(b) Symmetrisch</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 33.3%;justify-content: center;">
+<div id="fig-scheef4-3" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-scheef4-3.svg" class="img-fluid figure-img" data-ref-parent="fig-scheef4"></p>
+<p></p><figcaption class="figure-caption">(c) Links scheef</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.17: Vergelijking verdelingen.</figcaption><p></p>
+</figure>
+</div>
+</div>
+<p><strong>Berekening scheefheid</strong></p>
+<p>Een manier om de scheefheid in een dataset te berekenen is met <em>Pearson’s scheefheid coefficient</em> welke op twee manieren bepaald kan worden:</p>
+<ol type="1">
+<li><span class="math inline">\(scheefheid = \frac{gemiddelde - modus}{standaarddeviatie}\)</span></li>
+<li><span class="math inline">\(scheefheid = 3 *\frac{gemiddelde - mediaan}{standaarddeviatie}\)</span> heeft de voorkeur</li>
+</ol>
+<p>Standaard R heeft geen functie voor de berekening van de scheefheid en kurtosis. De packages <code>e1071</code> en <code>moments</code> hebben beide een functie <code>skewness()</code> en <code>kurtosis()</code>.</p>
+</section>
+<section id="sec-verd-sym-kurtosis" class="level3" data-number="2.6.2">
+<h3 data-number="2.6.2" class="anchored" data-anchor-id="sec-verd-sym-kurtosis"><span class="header-section-number">2.6.2</span> Kurtosis</h3>
+<p>Kurtosis is een statistische maatstaf die aangeeft in welke mate de data zich in de staarten of de piek van een verdeling bevinden, vergeleken met een normale verdeling. Met andere woorden, het geeft aan of de staart van de verdeling verder reikt dan de ±3 standaarddeviatie van het gemiddelde of niet.</p>
+<p>Er zijn drie soorten kurtosis die je in een verdeling kunt aantreffen:</p>
+<ol type="1">
+<li><strong>Mesokurtic</strong> - <span class="math inline">\(Kurtosis \pm3\)</span>. Verdeling heeft de vorm van een normale verdeling.</li>
+<li><strong>Leptokurtiv</strong> - <span class="math inline">\(Kurtosis \gt 3\)</span>. Verdeling heeft een scherpere piek en zwaardere staarten, wat wijst op meer uitbijters en minder waarden in de buurt van het gemiddelde.</li>
+<li><strong>Platykurtic</strong> - <span class="math inline">\(Kurtosis \lt 3\)</span>. Is minder gepiekt en heeft dunnere staarten, wat wijst op minder uitbijters en meer waarden in de buurt van het gemiddelde.</li>
+</ol>
+<p><span class="math display">\[Kurtosis = \frac{n * \sum_i^n (x_i - \bar{x})^4}{(\sum_i^n (x_i - \bar{x})^2)^2}\]</span></p>
+<p>Bij data-analyse is het concept van kurtosis erg belangrijk omdat het aangeeft hoe de uitbijters over de verdeling zijn verdeeld in vergelijking met een normale verdeling. Soms wordt de relatieve kurtosis van de verdeling bepaald in termen van overtollige kurtosis, welke berekend wordt door 3 af te trekken van de kurtosis, dus <span class="math inline">\(kurtosis - 3\)</span>. Je kunt dan de kurtosis uitdrukken als positief, negatief of nul.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Voorbeeld
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In de financiele wereld wordt op het gebied van risicobeheer en beleggingsrendement vaak gekeken naar de kurtosis. Deze geeft aan of er enige kans is op extreme waarden van rendementen. Een belegger zal zich vaak meer op zijn gemak voelen bij een platykurtische rendementsverdeling, omdat dit stabiele rendementen en een lager risico op plotselinge schokken van uitschieters aangeeft, terwijl een leptokurtische verdeling meer kansen op een hoger rendement maar met een hoger risico oplevert.</p>
+</div>
+</div>
+</section>
+<section id="sec-verd-sym-oefeningen" class="level3" data-number="2.6.3">
+<h3 data-number="2.6.3" class="anchored" data-anchor-id="sec-verd-sym-oefeningen"><span class="header-section-number">2.6.3</span> Oefeningen</h3>
+<p><strong>Symmetrische verdeling</strong></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">seq</span>(<span class="at">from=</span><span class="dv">65</span>, <span class="at">to=</span><span class="dv">135</span>, <span class="at">by=</span><span class="dv">5</span>), </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">times=</span><span class="fu">c</span>(<span class="fu">seq</span>(<span class="dv">3</span>, <span class="dv">24</span>, <span class="dv">3</span>), <span class="fu">seq</span>(<span class="dv">21</span>,<span class="dv">3</span>,<span class="sc">-</span><span class="dv">3</span>)))</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(x, <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="at">from=</span><span class="dv">60</span>, <span class="at">to=</span><span class="dv">140</span>, <span class="at">by=</span><span class="dv">5</span>), <span class="at">prob =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Symmetrische verdeling"</span>, <span class="at">ylab =</span> <span class="st">"Dichtheid"</span>,</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"lightblue"</span>)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">density</span>(x), <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-oef-symmetrisch" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-oef-symmetrisch-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.18: Symmetrische verdeling.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Scheefheid = 0 en Kurtosis = 2.381</p>
+<p><strong>Positieve scheefheid</strong></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">seq</span>(<span class="at">from=</span><span class="dv">90</span>, <span class="at">to=</span><span class="dv">140</span>, <span class="at">by=</span><span class="dv">5</span>), </span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">times =</span> <span class="fu">c</span>(<span class="dv">18</span>,<span class="dv">21</span>,<span class="dv">24</span>,<span class="dv">21</span>,<span class="dv">18</span>,<span class="dv">15</span>,<span class="dv">12</span>,<span class="dv">9</span>,<span class="dv">6</span>,<span class="dv">3</span>,<span class="dv">1</span>))</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(x, <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="at">from=</span><span class="dv">80</span>, <span class="at">to=</span><span class="dv">150</span>, <span class="at">by=</span><span class="dv">5</span>), <span class="at">prob =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Scheefheid positief"</span>,  <span class="at">ylab =</span> <span class="st">"Dichtheid"</span>,</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"lightblue"</span>)</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">density</span>(x), <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-oef-scheefheid-positief" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-oef-scheefheid-positief-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.19: Positieve scheefheid.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Scheefheid = 0.509 en Kurtosis = 2.45</p>
+<p><strong>Negatieve scheefheid</strong></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">seq</span>(<span class="at">from=</span><span class="dv">60</span>, <span class="at">to=</span><span class="dv">110</span>, <span class="at">by=</span><span class="dv">5</span>), </span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">times =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">6</span>,<span class="dv">9</span>,<span class="dv">12</span>,<span class="dv">15</span>,<span class="dv">18</span>,<span class="dv">21</span>,<span class="dv">24</span>,<span class="dv">21</span>,<span class="dv">18</span>))</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(x, <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="at">from=</span><span class="dv">50</span>, <span class="at">to=</span><span class="dv">120</span>, <span class="at">by=</span><span class="dv">5</span>), <span class="at">prob =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Scheefheid negatief"</span>,  <span class="at">ylab =</span> <span class="st">"Dichtheid"</span>,</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"lightblue"</span>)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">density</span>(x), <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-oef-scheefheid-negatief" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-oef-scheefheid-negatief-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.20: Negatieve scheefheid.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Scheefheid = -0.509 en Kurtosis = 2.45</p>
+<p><strong>Kurtosis negatief</strong></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">seq</span>(<span class="at">from=</span><span class="dv">65</span>, <span class="at">to=</span><span class="dv">135</span>, <span class="at">by=</span><span class="dv">5</span>), </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">each =</span> <span class="dv">10</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(x, <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="at">from=</span><span class="dv">60</span>, <span class="at">to=</span><span class="dv">140</span>, <span class="at">by=</span><span class="dv">5</span>), <span class="at">prob =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Kurtosis negatief"</span>,  <span class="at">ylab =</span> <span class="st">"Dichtheid"</span>,</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"lightblue"</span>)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">density</span>(x), <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-oef-kurtosis-negatief" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-oef-kurtosis-negatief-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.21: Negatieve kurtosis</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Kurtosis = 1.789</p>
+<p><strong>Kurtosis positief</strong></p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">seq</span>(<span class="at">from=</span><span class="dv">65</span>, <span class="at">to=</span><span class="dv">135</span>, <span class="at">by=</span><span class="dv">5</span>), </span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">times =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">27</span>,<span class="dv">32</span>,<span class="dv">27</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">2</span>))</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(x, <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="at">from=</span><span class="dv">60</span>, <span class="at">to=</span><span class="dv">140</span>, <span class="at">by=</span><span class="dv">5</span>), <span class="at">prob =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Kurtosis positief"</span>,  <span class="at">ylab =</span> <span class="st">"Dichtheid"</span>,</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"lightblue"</span>)</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">density</span>(x), <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-oef-kurtosis-positief" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-oef-kurtosis-positief-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.22: Positieve kurtosis</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Kurtosis = 4.722</p>
+<p><strong>Voorbeeld</strong></p>
+<div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>xn <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">seq</span>(<span class="at">from=</span><span class="dv">65</span>, <span class="at">to=</span><span class="dv">135</span>, <span class="at">by=</span><span class="dv">5</span>), </span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">times =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">3</span>))</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(xn), <span class="at">main=</span><span class="st">""</span>, <span class="at">xlab=</span><span class="st">""</span>, <span class="at">ylab=</span><span class="st">""</span>, <span class="at">yaxt =</span> <span class="st">"n"</span>, <span class="at">xaxt =</span> <span class="st">"n"</span>)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>xp <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">seq</span>(<span class="at">from=</span><span class="dv">65</span>, <span class="at">to=</span><span class="dv">135</span>, <span class="at">by=</span><span class="dv">5</span>), </span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">times =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">27</span>,<span class="dv">32</span>,<span class="dv">27</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">2</span>))</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(xp), <span class="at">main =</span> <span class="st">""</span>, <span class="at">xlab=</span><span class="st">""</span>, <span class="at">ylab=</span><span class="st">""</span>, <span class="at">yaxt =</span> <span class="st">"n"</span>, <span class="at">xaxt =</span> <span class="st">"n"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="fig-vb-kurtosis" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-vb-kurtosis-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-vb-kurtosis-1.svg" class="img-fluid figure-img" data-ref-parent="fig-vb-kurtosis"></p>
+<p></p><figcaption class="figure-caption">(a) Negatieve kurtosis</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-vb-kurtosis-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="kansverdelingen_files/figure-html/fig-vb-kurtosis-2.svg" class="img-fluid figure-img" data-ref-parent="fig-vb-kurtosis"></p>
+<p></p><figcaption class="figure-caption">(b) Positieve kurtosis</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.23: Dichtheidsdiagram voor verdelingen met een negatieve en positieve kurtosis.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-verd-fitdistr" class="level2" data-number="2.7">
+<h2 data-number="2.7" class="anchored" data-anchor-id="sec-verd-fitdistr"><span class="header-section-number">2.7</span> Geschikte verdeling zoeken</h2>
+<p>Een interessante functie is <code>fitdistr()</code> uit package <code>MASS</code> waarmee je een geschikte kansverdeling voor een dataset kunt bepalen..</p>
+<p><code>fitdistr(x, densfun, start, ...)</code></p>
+<ul>
+<li><code>x</code> - numerieke vector met de te onderzoeken waarden</li>
+<li><code>densfun</code> - String met verdeling waarmee getest wordt: “beta”, “cauchy”, “chi-squared”, “exponential”, “gamma”, “geometric”, “log-normal”, “lognormal”, “logistic”, “negative binomial”, “normal”, “Poisson”, “t”, “weibull”</li>
+<li><code>start</code> - optioneel beginwaarden voor parameters</li>
+</ul>
+<p>Returnwaarden</p>
+<ul>
+<li><p><code>estimate</code> - de schatting van de parameters</p></li>
+<li><p><code>sd</code> - de geschatte standaardfouten</p></li>
+<li><p><code>vcov</code> - de geschatte variantie-covariantie matrix</p></li>
+<li><p><code>loglik</code> - de log-likelihood.</p></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Genereer een normale verdeling</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">1000</span>, <span class="at">mean =</span> <span class="dv">6</span>, <span class="at">sd =</span> <span class="fl">1.5</span>)</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Geschatte parameters</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>verdeling <span class="ot">&lt;-</span> MASS<span class="sc">::</span><span class="fu">fitdistr</span>(x, <span class="st">"normal"</span>)</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>verdeling<span class="sc">$</span>estimate</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; mean   sd </span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5.97 1.50</span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>verdeling<span class="sc">$</span>sd</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   mean     sd </span></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.0474 0.0335</span></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>verdeling<span class="sc">$</span>vcov</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         mean      sd</span></span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; mean 0.00225 0.00000</span></span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sd   0.00000 0.00112</span></span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>verdeling<span class="sc">$</span>loglik</span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -1824</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Bronnen:</p>
+<ul>
+<li><a href="https://www.r-bloggers.com/2011/12/fitting-distributions-with-r/">Fitting distributions with r</a></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Gekopieerd!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Gekopieerd!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          // default icon
+          link.classList.add("external");
+      }
+    }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./kansrekenen.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Kansrekening</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./variabelen.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Variabelen</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
