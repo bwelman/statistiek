@@ -1,0 +1,96 @@
+# F-Toets {#sec-ftoets}
+
+Deze toets kan gebruikt worden om te onderzoeken of de varianties van twee steekproeven uit een normale verdeling gelijk kunnen zijn. Daardoor is deze test erg nuttig bij het uitvoeren van een t-test waarbij je aan moet geven of de varianties al dan niet gelijk zijn.
+
+De op te stellen hypothesen zijn:
+
+-   $H_0 : \sigma^{2}_{x} = \sigma^{2}_{y}$
+
+-   $H_1 : \sigma^{2}_{x} \neq \sigma^{2}_{y}$
+
+Om deze hypothese te toetsen worden de twee varianties op elkaar gedeeld:
+
+$F(v_1, v_2) = \frac{S^{2}_{x}}{S^{2}_{y}}$ met
+
+$v_1 = n_x - 1$ en $v_2 = n_y - 1$ , het aantal vrijheidsgraden van x en y.
+
+Wanneer de varianties even groot zijn dan is $F = 1$. Omdat je met de F-toets nooit tweezijdig toetst zet men meestal de variabele met de grootste variantie in de teller zodat je alleen maar hoeft te letten op p-waarden kleiner dan $\alpha$.
+
+::: {#exm-ftoets-1}
+Van een groep van 25 studenten (16 jongens, 9 meisjes) is de lengte gemeten:
+
+-   jongens: $\mu_j = 180$ en $sd_j= 6$
+-   meisjes: $\mu_m = 168$ en $sd_m= 4$
+
+dan is $F = \frac{6^2}{4^2} = 2.25$
+
+Voor een tweezijdig 95% betrouwbaarheidsinterval kunnen de grenswaarden bepaald worden:
+
+```{r}
+qf(0.975, 15, 8)
+qf(0.025, 15, 8)
+```
+
+Kritieke gebied: Z = {x\| x \< 0.3126 of x \> 4.1012}
+
+De gevonden waarde van 2.25 ligt niet in het kritieke gebied, dus nulhypothese niet afwijzen, dus de varianties van beide populaties kunnen aan elkaar gelijk zijn.
+
+(Bron: Buijs, pag. 294)
+:::
+
+## Toetsing {#sec-ftoets-toetsing}
+
+Net als bij de t-test kunnen de gegevens in gestapelde en ongestapelde vorm zijn.
+
+**gestapelde vorm**: `var.test(waarde ~ groep, dataset)`, met `waarde` de variabelenaam voor de waarden en `groep` de variabelenaam voor de groepen.
+
+Wanneer de variabele voor de groepen meer dan twee niveaus bevat moet aangegeven worden welke twee groepen met elkaar vergeleken moeten worden, bijvoorbeeld: `var.test(waarde ~ groep, dataset, groep %in% c("groep1", "groep2"))`
+
+**ongestapelde vorm**: `var.test(dataset$groep1, dataset$groep2)`
+
+Optionele argumenten:
+
+-   `ratio = 1`, de nulhypothese van de verhouding van de varianties van de populaties, defaultwaarde 1
+-   `alternative = c("two.sided", "less", "greater")` , specificeert de alternatieve hypothese, defaultwaarde `"two.sided"`
+-   `conf.level = 0.95`, specificeert het betrouwbaarheidsinterval, defaultwaarde `0.95`
+
+## Voorbeelden {#sec-ftoets-vb}
+
+::: {#exm-ftoets-2}
+De dataset `iris` welke standaard in R be zit, bevat voor elk van de soorten *setosa*, *versicolor* en *virginica* steeds 50 waarnemingen in centimeters van de variabelen Sepal.Length, Sepal.Width, Petal.length en Petal.Width. (sepal = kelkblad, petal = bloemblad). Om een t-test uit te voeren voor het toetsen van gelijke gemiddeldes van de variabele Sepal.Width voor de soorten versicolor en virginica.
+
+(Bron: boek "using R for Statistics", Sarah Stowell, chapter 10)
+
+**Toetsingsgrootheid** : $F$
+
+$H_0 : F = 1$, de varianties van de populaties zijn gelijk
+
+$H_1: F \neq 1$, de varianties van de populaties zijn verschillend
+
+De F-toets:
+
+```{r}
+var.test(Sepal.Width~Species, iris, Species %in% c("versicolor", "virginica"))
+```
+
+:::
+
+::: {#exm-ftoets-3}
+Twee steekproeven
+
+(Bron: [Two sample Student's t-test #1](https://www.r-bloggers.com/two-sample-students-t-test-1/))
+
+**Toetsingsgrootheid** : F
+
+$H_0 : F = 1$, de varianties van de populaties zijn gelijk
+
+$H_1: F \neq 1$, de varianties van de populaties zijn verschillend
+
+```{r}
+A <- c(175, 168, 168, 190, 156, 181, 182, 175, 174, 179)
+B <- c(185, 169, 173, 173, 188, 186, 175, 174, 179, 180)
+var.test(A, B)
+```
+
+De p-waarde is groter dan 0.05 dus $H_0$ niet verwerpen, de varianties kunnen gelijk zijn.
+:::

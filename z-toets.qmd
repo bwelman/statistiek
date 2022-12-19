@@ -1,0 +1,63 @@
+# Z-Toets {#sec-ztoets}
+
+De **z-toets** gebruik je als je wilt toetsen of het gemiddelde van een steekproef significant verschilt van het gemiddelde van een populatie met bekende standaardafwijking.
+
+Wanneer het populatiegemiddelde niet bekend is kun je de **t-toets** gebruiken.
+
+De z-toets zit niet standaard in R, maar is zo eenvoudig dat je gemakkelijk zelf hiervoor een functie kunt maken. Wel zit de functie `z.test()` in de package `BSDA`. De nulhypothese is dat het steekproefgemiddelde gelijk is aan het populatiegemiddelde. Als alternatieve hypothese kun je zowel kleiner, groter als ongelijk gebruiken.
+
+::: {#exm-ztoets-1}
+Van een populatie met gemiddelde 40 en standaarddeviatie 5 wordt een steekproef met 10 waarnemingen genomen.
+
+```{r}
+#| label: ztoets-vb1
+x <- c(31, 43, 37, 39, 33, 46, 35, 42, 37, 40)
+```
+
+Het gemiddelde van deze 10 waarnemingen is `r mean(x)`. Toets met $\alpha$=0.05 of er een significant verschil is met het populatiegemiddelde.
+
+$H_0: \mu = 40$
+
+$H_1: \mu \neq 40$ (dus een tweezijdige toetsing)
+
+```{r}
+#| label: ztoets-vb1-test
+BSDA::z.test(x, mu = 40, sigma.x = 5)
+```
+
+:::
+
+::: {#exm-ztoets-2}
+In 1960 bedroeg het gemiddelde gewicht 75.4 kg voor mannen tussen 20 en 74 jaar. In 2002 was dit gestegen naar 86.6 kg. De standaarddeviaties van de populaties is onbekend. In het bestand `sporters.csv` staan de gewichten van een steekproef van 40 mannen die minstens drie keer per week sporten. Toets hiermee de hypothese dat mannen die regelmatig sporten een lager gemiddeld gewicht hebben dan 86.6 kg. Gebruik de standaarddeviatie van de steekproef als een schatting voor de standaarddeviatie van de populatie.
+
+$H_0: \mu = 86.6$
+
+$H_1: \mu \neq 86.6$ (dus eenzijdige toetsing)
+
+```{r}
+#| label: ztoets-vb2
+sporters <- read.csv("data/sporters.csv")
+gewichten <- sporters$gewicht
+mean(gewichten)
+BSDA::z.test(x = gewichten, mu = 86.6, sigma.x = sd(gewichten), alternative = "less")
+```
+
+De kleine p-waarde duidt er op dat de nulhypothese afgewezen kan worden, dus mannen die regelmatig sporten wegen significant minder dan de gemiddelde man.
+:::
+
+## Functie {#sec-ztoets-functie}
+
+Een zelf gebouwde functie.
+
+```{r}
+#| label: ztoets-vb2-functie
+#| echo: true
+ztest = function(x,mu,popvar){
+  one.tail.p <- NULL
+  z.score <- round((mean(x) - mu)/(popvar/sqrt(length(x))),3)
+  one.tail.p <- round(pnorm(abs(z.score),lower.tail = FALSE),3)
+  cat(" z =",z.score,"\n", 
+      "1-zijdige waarschijnlijkheid =", one.tail.p,"\n", 
+      "2-zijdige waarschijnlijkheid =", 2*one.tail.p )
+}
+```

@@ -1,0 +1,184 @@
+# Data splitsen {#sec-datasplit}
+
+```{r}
+#| results: "asis"
+#| echo: false
+source("_common.R")
+```
+
+Voor het opstellen van een model en het toetsen hiervan wordt een gegevensverzameling meestal opgedeeld in een deel voor het opstellen en trainen van het model en een deel voor het testen van het model. Meestal wordt zo'n 70% van de data voor de training gebruikt en 30% voor het testen. De resultaten worden als bevredigend beschouwd als je vergelijkbare resultaten krijgt in de trainings- en testdatasets. Bij regressiemodellen wordt er meestal gesplitst op basis van de respons (voorspellende, afhankelijke) variabele.
+
+Bij het splitsen moet je ervoor zorgen dat de testset aan de volgende twee voorwaarden voldoet:
+
+1.  Het aantal testgegevens moet groot genoeg zijn om statistisch relevante resultaten op te leveren.
+2.  De testset moet representatief zijn voor de gehele verzameling, dus de kenmerken van de test- en traingsgegevens moeten vergelijkbaar zijn.
+
+De mogelijkheden om een dataset te splitsen in een trainingsset en testset worden hierna behandeld. De syntax voor de functies is meestal ingekort voor dit doel.
+
+```{r}
+# Percentage voor training instellen
+perc_train <- 0.7
+perc_test <- 1 - 0.7
+```
+
+## sample {#sec-datasplit-sample}
+
+Syntax: `sample(x, size, replace = FALSE)`
+
+::: {exm-sample-1}
+De dataset `mtcars` is een dataframe met `r nrow(mtcars)` rijen.
+
+Met de functie `seq_len(nummer)` kun je een reeks maken die begint bij 1 en met een stapgrootte van 1 eindigt bij de waarde `nummer`. Wanneer `nummer` gelijk is aan het aantal rijen in het dataframe, dan bestaat de reeks dus uit de rijnummers van het dataframe en kan daardoor dienen als index voor het dataframe.
+
+```{r}
+set.seed(123)
+# Bepaal het aantal waarden voor train
+sample_size = round(nrow(mtcars) * perc_train) # Moet geheel getal zijn
+# Maak een reeks rijnummers en trek hier
+sample_id <- sample(seq_len(nrow(mtcars)), size = sample_size)
+# Getrokken rijnummers voor train
+sort(sample_id)
+
+train <- mtcars[sample_id, ]
+test <- mtcars[-sample_id, ]
+```
+
+Een alternatief voor `-index` om de rijnummers voor `test` te krijgen is via `setdiff(1:nrow(mtcars), index)`.
+:::
+
+## sample.int {#sec-datasplit-sample-int}
+
+Syntax: `sample.int(n, size, replace = FALSE)`
+
+Dit is een variant op `sample()`, waarbij `n` het aantal gehele nummers is waaruit gekozen moet worden.
+
+```{r}
+set.seed(123)
+# Bepaal het aantal waarden voor train
+sample_size = round(nrow(mtcars) * perc_train) # Moet geheel getal zijn
+sample_id <- sample.int(n = nrow(mtcars), size = sample_size)
+
+train <- mtcars[sample_id, ]
+test  <- mtcars[-sample_id, ]
+```
+
+## sample_n {#sec-datasplit-sample-n}
+
+Aanwezig in package `dplyr`.
+
+Syntax: `sample_n(tbl, size, replace = FALSE)`
+
+-   `tbl` , tabel met data
+-   `size`, het aantal te kiezen rijen
+
+Dit is een verpakking (wrapper) rond `sample.int()`.
+
+```{r}
+set.seed(123)
+
+sample_size = round(nrow(mtcars) * perc_train) 
+
+train <- sample_n(mtcars, sample_size)
+
+# omzetten naar numeriek, omdat rownames() character als resultaat geeft
+sample_id <- as.numeric(rownames(train)) 
+test <- mtcars[-sample_id, ]
+```
+
+::: {.info data-latex=""}
+Wanneer je met `dplyr` werkt en het dataframe (df) heeft geen indexnummers waar je graag mee zou willen werken, dan kun je eenvoudig indexnummers toekennen met de opdracht `df <- df %>% mutate(id = row_number(df))`.
+:::
+
+## sample_frac {#sec-datasplit-sample-frac}
+
+Aanwezig in package `dplyr`.
+
+Syntax: `sample_frac(tbl, size, replace = FALSE)`
+
+-   `size`, fractie van het aantal te kiezen rijen
+
+Dit is een verpakking (wrapper) rond `sample.int()`.
+
+```{r}
+set.seed(123)
+
+train <- sample_frac(mtcars, perc_train)
+
+# omzetten naar numeriek, omdat rownames() character als resultaat geeft
+sample_id <- as.numeric(rownames(train)) 
+test <- mtcars[-sample_id, ]
+```
+
+## createDataPartiton {#sec-datasplit-createpartition}
+
+Aanwezig in package `caret`.
+
+Syntax: `createDataPartition(y, times = 1, p = 0.5, list = TRUE)`
+
+-   `y`, vector voor afhankelijke variabele
+-   `times`, het aantal verdelingen dat gemaakt moet worden
+-   `p`, het percentage gegevens voor training
+-   `list`, logische waarde welke aangeeft of het resultaat in een list (TRUE) of in een matrix (FALSE) moet.
+
+Deze functie kan worden gebruikt om evenwichtige splitsingen van de gegevens te maken. Als `y` bijvoorbeeld een factor is, vindt de aselecte trekking binnen elke klasse plaats zodat de algehele klasseverdeling van de data behouden blijft.
+
+```{r}
+set.seed(3456)
+
+trainindex = createDataPartition(iris$Species, p = perc_train, list = FALSE)
+train = iris[trainindex, ]
+test = iris[-trainindex, ]
+```
+
+## sample_split {#sec-datasplit-sample-split}
+
+Aanwezig in package `caTools`.
+
+Syntax: `sample.split( Y, SplitRatio = 2/3)`
+
+-   `Y` , vector met data labels
+-   \`SplitRatio,
+
+De functie genereert een vector met TRUE en FALSE waarden, waarbij de fractie van het aantal TRUE waarden gelijk is aan SplitRatio. Met de functie `subset()` kun je dan de dataset splitsen.
+
+```{r}
+require(caTools)
+
+set.seed(123) 
+sample = sample.split(iris$Species, SplitRatio = perc_train)
+train = subset(iris, sample == TRUE)
+test  = subset(iris, sample == FALSE)
+```
+
+## Voorbeeld {#sec-datasplit-voorbeeld}
+
+Het volgende is een erg kunstmatig voorbeeld, maar laat wel aardig zien hoe je een dataframe met verschillende waarden voor verschillende variabelen kunt genereren en daarna op basis van een categorievariabele kunt splitsen.
+
+Van een aantal personen zijn wat kenmerken verzameld, waaronder het lidmaatschap van een groep. Als eerste wordt een dataframe met kenmerken gegenereerd.
+
+```{r}
+aantal <- 30
+set.seed(12345)
+geslacht <- sample(c("V", "M"), size = aantal, replace = TRUE)
+groep <- sample(c("XXX", "YYY", "ZZZ"), size = aantal, replace = TRUE)
+leeftijd <- sample(18:55, size = aantal, replace = TRUE)
+IQ <- round(rnorm(aantal, mean = 100, sd = 15))
+beoordeling <- round(runif(aantal, min = 0, max = 6))
+mijndf <- data.frame(geslacht, groep, leeftijd, IQ, beoordeling)
+# Voor een id erbij: mijndf <- data.frame(id = 1:aantal, geslacht,...)
+```
+
+Stel nu dat je een model wilt maken waarbij groep de afhankelijke variabele is, en de andere de onafhankelijke varibelen zijn. Voor trainig en validatie van het model wil je deze groep splitsen in 65% voor training en 25% voor test op basis van de waarde voor groep.
+
+```{r}
+perc_train <- .65
+set.seed(3456)
+
+trainindex = createDataPartition(mijndf$groep, p = perc_train, list = FALSE)
+train = mijndf[trainindex, ]
+test = mijndf[-trainindex, ]
+
+train
+test
+```
+

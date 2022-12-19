@@ -1,0 +1,342 @@
+# Exploratieve Data Analyse (EDA) {#sec-eda}
+
+```{r}
+#| results: "asis"
+#| echo: false
+source("_common.R")
+```
+
+Exploratieve data analyse (EDA) als aanpak werd al in 1977 beschreven door John W. Tukey. Het is een aanpak gebaseerd op eigen waarnemingen die aan het einde van het proces worden bevestigd met statistische methoden. Het is een aanpak om data te onderzoeken op inhoudelijke kenmerken, samenhang en voorspellende (of verklarende) eigenschappen.
+
+Het doel van EDA is het kiezen van het eenvoudigste data model met de minste aannames, laagste aantal variabelen en het hoogste verklarende (of voorspellende) vermogen met de laagst mogelijke negatieve effecten binnen machine learning algoritmes zoals bias, hoge variatie of 'overfitting'.
+
+Veel methoden zijn grafisch. Door gebruik te maken van data visualisaties worden verwachte of juist onverwachte eigenschappen intuïtief zichtbaar. De grafische methoden worden aangevuld met statische technieken om o.a. patronen of verbanden te herkennen en te bevestigen.
+
+Het onderzoek tijdens de exploratieve data analyse omvat o.a.:
+
+-   Een samenvatting van de data met behulp van beschrijvende statistiek. Dit is vaak de eerste stap en geeft een globaal beeld van het karakter van de data.
+    -   numerieke variabelen: centrum, variantie, vorm
+    -   kwalitatieve variabelen: frequentietabellen, vorm
+-   Herkennen van fouten in de data, denk aan ontbrekende waardes of variabelen met een uitzonderlijk lage variatie.
+-   Onderzoek naar interessante patronen in de data, zoals trends, seizoensinvloeden, groeperingen (clusters) en afwijkingen hierop.
+-   Testen van de aannames die zijn gedaan over het voorspellende en/of verklarende vermogen van de data.
+-   Onderzoeken van de samenhang tussen de variabelen onderling en het gewenste resultaat.
+-   Identificeren van variabelen die de meeste invloed hebben op het gewenste resultaat.
+-   Noodzakelijke bewerkingen op de data voordat deze als grondstof gebruik kan worden voor machine learning. Aandachtspunten zijn o.a. ontbrekende waardes, normaliseren, uitschieters, lage variatie en het reduceren van dimensionaliteit.
+
+Veel gebruikte grafieksoorten zijn:
+
+-   *Histogram*, om de spreiding in beeld te brengen. Je combineert deze met een dichtheidscurve om de aanname van normaliteit te onderzoeken. Als er sprake is van asymmetrie, scheefheid (skewness) dan is dat aanleiding voor verder onderzoek. Een andere grafiek voor het toetsen op normaliteit is een Q-Q plot.
+-   *Boxplot*, ook om de spreiding te onderzoeken, alsmede het ontdekken van uitschieters (outliers).
+-   *Scatterplot* met *trendlijn*, om de samenhang tussen variabelen te onderzoeken.
+
+Het onderzoeken van een nieuwe gegevensverzameling kan een spannende zaak zijn. Zaken die je wilt weten zijn welke variabelen je hebt en wat de structuur ervan is, hoeveel records er zijn, hoeveel ontbrekende waarden er zijn, welke relaties er tussen de variabelen zijn, enz.
+
+## STEAM project {#sec-eda-steam}
+
+Bron: [STEAM project](https://www.littlemissdata.com/blog/simple-eda)
+
+```{r}
+# Data
+url <- "https://raw.githubusercontent.com/lgellis/STEM/master/DATA-ART-1/Data/FinalData.csv"
+# download.file(url, file.path("data", "FinalData.csv"))
+df <- read_csv("data/FinalData.csv", col_names = TRUE)
+```
+
+**HEAD en TAIL**
+
+```{r}
+head(df)
+tail(df)
+```
+
+**DIM**
+
+```{r}
+dim(df)
+```
+
+**GLIMPSE**
+
+Functie `glimpse` uit `dplyr` package toont alle variabelen en het type. Alsmede een voorbeeld van de inhoud. Erg handig voor een overzicht.
+
+```{r}
+glimpse(df)
+```
+
+**SUMMARY**
+
+Functie `summary` toon elke variabele, gegevenstype en wat andere kenmerken die vooral nuttig zijn voor numerieke variabelen.
+
+**SKIM**
+
+Functie `skim` uit `skimr` package is een goede aanvulling op `summary`. Toont naast numerieke kenmerken tevens ontbrekende waarden, kwartielinfo en een inline histogram.
+
+```{r}
+skimr::skim(df)
+```
+
+**CREATE_REPORT in DataExplorer**
+
+Deze mooie functie maakt een volledig gegevensprofiel van het dataframe. En produceert een html-bestand met de basisstatistieken, structuur, ontbrekende gegevens, distributie-visualisaties, correlatiematrix en hoofdcomponentenanalyse voor het dataframe!
+
+```{r}
+#| eval: false
+#| message: false
+#| warning: false
+
+DataExplorer::create_report(df)
+```
+
+## ToothGrowth {#sec-eda-toothgrowth}
+
+`ToothGrowth` is een gegevensverzameling van een onzerzoek naar het effect van Vitamine C op de tandgroei van Guinese biggetjes. De verzameling bevat 60 waarnemingen van 3 variabelen:
+
+-   `len`, lengte tand
+-   `supp`, type toediening, OJ = Orange Juice, VC = Vitamine C in de vorm van ascorbinezuur
+-   `dose`, dosis in mg/dag
+
+```{r}
+str(ToothGrowth)
+```
+
+**Kwalitatieve variabele**
+
+```{r}
+#Frequentietabel
+table(ToothGrowth$supp)
+
+#Proportionele frequenties
+prop.table(table(ToothGrowth$supp))
+
+#Procentuele frequenties
+prop.table(table(ToothGrowth$supp))*100
+```
+
+**Numerieke variabele**
+
+```{r}
+#Gemiddelde
+mean(ToothGrowth$len, na.rm = TRUE)
+
+#Mediaan
+median(ToothGrowth$len, na.rm = TRUE)
+
+#Modus (hiervoor bestaat geen rechtstreekse functie)
+which.max(table(ToothGrowth$len))
+
+#Variantie
+var(ToothGrowth$len)
+
+#Standaarddeviatie
+sd(ToothGrowth$len)
+```
+
+Door naar de vorm van de gegevens te kijken probeer je een indruk te krijgen van de scheefheid (skewness) en pieken in de verdeling (kurtosis). Meestal worden hiervoor histogrammen, dichtheidsgrafieken en boxplots gebruikt.
+
+```{r}
+#Histogram met dichtheidslijn
+hist(ToothGrowth$len, col = "lightblue", probability = TRUE)
+lines(density(ToothGrowth$len))
+```
+
+**Samenvatting van meerdere variabelen tegelijk**
+
+```{r}
+summary(ToothGrowth)
+```
+
+De functie `describe()` uit package `Hmisc` geeft wat meer gedetailleerde informatie over de variabelen.
+
+```{r}
+Hmisc::describe(ToothGrowth)
+```
+
+En de functie `describe uit package`psych\` geeft bijna alle hiervoor genoemde informatie. Een mooie functie
+
+```{r}
+psych::describe(ToothGrowth)
+```
+
+## Kruistabellen {#sec-eda-kruistabellen}
+
+Bron: [Contingency Tables in R](https://predictivehacks.com/contingency-tables-in-r/)
+
+Een veel voorkomende manier om categoriale gegevens weer te geven en te analyseren is met kruistabellen. Als voorbeeld wordt met de `Wage` dataset uit package `ISLR` gewerkt (zie Calibre boek "Introduction to Statistical Learning", Gareth James e.a.). Deze bevat loon- en andere gegevens (totaal 11 variabelen) voor een groep van 3000 mannelijke arbeiders in de Mid-Atlantische regio. De variabelen zijn:
+
+-   `year`: Jaar waarin de looninformatie werd geregistreerd
+-   `age`: Leeftijd van de werknemer
+-   `marit1`: Een factor met niveaus voor de burgerlijke staat:
+    1.  Never married (Nooit getrouwd)
+    2.  Married (Getrouwd)
+    3.  Widowed (Weduwnaar)
+    4.  Divorced (Gescheiden)
+    5.  Separated (Gescheiden)
+-   `race`: Een factor met niveaus voor ras:
+    1.  White (Blank)
+    2.  Black (Zwar)
+    3.  Asian (Aziatisch)
+    4.  Other (Anders)
+-   `education`: Een factor met niveaus voor het opleidingsniveau:
+    1.  \< HS Grad
+    2.  HS Grad
+    3.  SomeCollege
+    4.  College Grad
+    5.  Advanced Degree
+-   `region`: Regio van het land (uitsluitend mid-atlantic)
+-   `jobclass`: Een factor met niveaus voor de soort baan:
+    1.  Industrial (Industrieel)
+    2.  Information (Informatie)
+-   `health`: Een factor met niveaus voor de gezondheidstoestand van de werknemer:
+    1.  \< =Good (Goed)
+
+    2.  
+
+        > =Very Good (Zeer goed)
+-   `health_ins`: Een factor met niveaus die aangeeft of de werknemer een ziektekostenverzekering heeft:
+    1.  Yes (Ja)
+    2.  No (Nee)
+-   `logwage`: Natuurlijke logaritme van brutoloon werknemer
+-   `wage`: Brutoloon werknemer
+
+### Tweezijdige kruistabel {#sec-eda-kruistabel-tweezijdig}
+
+Wanneer je een kruistabel maakt van variabele $X$ met $m$ categorieén met variabele \$Y\$ met n categorieë n krijg je mxn mogelijke combinaties.
+
+Als eerste oefening wordt een nieuwe variabele `loon_cat` gemaakt met twee waarden "Bovengemiddeld" en "Ondergemiddeld" respectievelijk aangevend of het loon boven of onder het gemiddelde zit.
+
+```{r}
+salaris <- ISLR2::Wage
+salaris$loon_cat <- as.factor(ifelse(salaris$wage > median(salaris$wage), 
+                                  "Bovengemiddeld", "Ondergemiddeld"))
+```
+
+Om te onderzoeken of er een relatie is tussen `loon_cat` en `jobclass` wordt een kruistabel gemaakt.
+
+```{r}
+ktbl <- table(salaris$jobclass, salaris$loon_cat)
+knitr::kable(ktbl)
+```
+
+Met de functie `addmargins()` kun je rij- en kolomtotalen toevoegen.
+
+```{r}
+knitr::kable(addmargins(ktbl))
+```
+
+**Fracties in kruistabellen**
+
+In plaats van aantallen kun je ook fracties weergeven, zowel fracties van het overall totaal, als van het rijtotaal en kolomtaal.
+
+```{r}
+# overall fractie
+knitr::kable(prop.table(ktbl), digits = 4)
+
+# rijtotaal fractie
+knitr::kable(prop.table(ktbl, margin = 1), digits = 4)
+
+# rijtotaal fractie
+knitr::kable(prop.table(ktbl, margin = 2), digits = 4)
+```
+
+**mosaic grafiek**
+
+De meest geschikte manier om de kruistabellen grafisch weer te geven, zijn *mosaic* grafieken. Dat kan met de standaard in R aanwezige functie `mosaicplot()`.
+
+```{r}
+mosaicplot(ktbl)
+```
+
+Uit deze grafiek kun je gemakkelijk zien dat in de sector Industrial het percentage mensen dat onder het gemiddelde zit, hoger is in vergelijking met degenen die in de sector Information werken.
+
+**Chi-kwadraat toets**
+
+```{r}
+chisq.test(ktbl)
+```
+
+Zoals je kunt zien is de p-waarde minder dan 5%, dus kun je de nulhypothese afwijzen dat de jobclass onafhankelijk is van het gemiddelde loon.
+
+## Diamonds {#sec-eda-diamonds}
+
+Korte inspectie data
+
+```{r}
+head(diamonds)
+tail(diamonds)
+```
+
+Structuur data
+
+```{r}
+str(diamonds)
+```
+
+### 1 variabele {.unnumbered}
+
+Samenvatting
+
+```{r}
+summary(diamonds$price)
+```
+
+Boxplot
+
+```{r}
+boxplot(diamonds$price, col = 'lightblue', xlab = 'Aantal', ylab = 'Price', main = 'Boxplot')
+```
+
+Log transformatie voor ondersteuning normalisatie data.
+
+```{r}
+boxplot(log(diamonds$price), col = 'lightblue', xlab = 'Aantal', ylab = 'Price', main = 'Boxplot')
+```
+
+Histogram
+
+```{r}
+hist(diamonds$price, breaks = 10, col = 'lightblue', xlab = 'Price', main  = 'Histogram van Price')
+```
+
+-   Het is duidelijk dat meer dan 25.000 diamanten ongeveer \$2000 zullen kosten.
+-   Er zijn 3000-5000 diamanten waarvan de prijs boven de \$10000 ligt.
+-   Distributie is rechts scheef. Dit wijst op de aanwezigheid van uitbijters aan. Onderzoek deze uitbijters.
+
+Staafdiagram
+
+```{r}
+plot(diamonds$cut, col = 'lightblue', xlab="cut", main="Staafdiagram")
+```
+
+### Meerdere variabelen {.unnumbered}
+
+Boxplots
+
+```{r}
+boxplot(carat ~ cut, data = diamonds, col = "lightblue", main = 'Boxplots')
+```
+
+-   De beste kwaliteit diamanten kregen het gewicht binnen 2,5
+-   Diamanten van lage kwaliteitzijn groter in gewicht / maat.
+
+Histogrammen
+
+```{r}
+par(mfrow = c(2, 1), mar = c(4, 4, 2, 1))
+hist(subset(diamonds, cut == 'Fair')$price, col = 'lightblue', xlab = 'Price', ylab = 'Aantal', main = 'Histogram van Cut(Fair) vs Price verdeling')
+hist(subset(diamonds, cut == 'Ideal')$price, col = 'lightblue', xlab = 'Price', ylab = 'Aantal', main = 'Histogram van Cut(Ideal) vs Price verdeling')
+```
+
+-   Diamanten van goede kwaliteit minder kosten. Het is een vreemd patroon, maar is waar voor deze data.
+-   De diamanten van lage kwaliteit kosten meer.
+
+Scatter plots
+
+```{r}
+par(mfrow = c(1, 2), mar = c(5, 4, 2, 1))
+ with(subset(diamonds, cut == "Fair"), plot(carat, price, main = "Fair", col = 'lightblue'))
+ with(subset(diamonds, cut == "Ideal"), plot(carat, price, main = "Ideal", col = 'lightblue'))
+```
+
+-   De prijs van de diamanten is afhankelijk van het gewicht/de grootte van de diamanten.
+-   De kwaliteit van diamanten heeft een kleinere bijdrage in vergelijking met het gewicht van diamanten.

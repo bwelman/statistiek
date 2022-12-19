@@ -1,0 +1,185 @@
+# Maximum Likelihood {#sec-likelihood}
+
+-   Grootste Aannemelijkheid Methode
+-   Maximum Likelihood Estimation (MLE)
+
+Een statistisch onderzoek wordt gedaan aan de hand van een gegevensverzameling, een verzameling van waarnemingen gedaan tijdens het onderzoek. Bij dit onderzoek wordt geprobeerd om een statistisch model te maken dat zo goed mogelijk bij de waarnemingen past. En zo'n statistisch model heeft vaak een of meerdere parameters. Een paar voorbeelden.
+
+-   De waarnemingen zijn de meetresultaten van de lengte van personen. Het model zou kunnen zijn dat de lengtes een normale verdelingen vormen. En een normale verdeling kent twee parameters: gemiddelde en standaarddeviatie.
+-   De waarnemingen zijn de resultaten van het werpen met een munt: kop of munt. Het model heeft 1 parameter, bijvoorbeeld de kans op kop boven.
+-   De waarnemingen zijn de opbrengsten van een bedrijf afhankelijk van het reclamebudget. Het model zou een lineair regressiemodel kunnen zijn. Een dergelijk model heeft als vergelijking $y = a*x + b$. Dit model heeft twee parameters, $a$ en $b$.
+
+Wanneer je de waarden van de parameters niet kent, dan probeer je die te schatten. Bijvoorbeeld van een normale verdeling probeer je het gemiddelde van de verdeling te schatten. Je zou dat kunnen doen door een steekproef te nemen en het gemiddelde van de steekproef als schatter voor het gemiddelde van de populatie te nemen. Maar is deze waarde dan wel de beste schatter?
+
+Het steekproefgemiddelde is een toevalsvariabele (kansvariabele), want iedere steekproeftrekking levert een nieuwe waarde voor de te schatten parameter.
+
+In een wat formelere taal.
+
+-   $\theta$ = de te schatten parameter (bijv. het gemiddelde van een normale verdeling)
+-   $S$ = een schatter van $\theta$ en is een kansvariabele
+-   $S$ is een **zuivere** schatter wanneer $E(S) = Θ$.
+-   $S$ is een **efficiënte** schatter wanneer $Var(S)$ minimaal is.
+
+De methode van de grootste aannemelijkheid (maximum likelihood) is een methode om de parameters van een statistisch model te schatten. De beste schatter is de waarde van de parameter die gezien de steekproefuitkomst het meest aannemelijk is. De beste schatter heet meest aannemelijke schatter, of maximum-likelihood-schatter, maximum likelihood estimate (MLE). En hoe waarschijnlijk de waarde van de parameter is wordt afgemeten aan de kans om bij die waarde van de parameter de steekproefuitkomst te vinden. De waarden voor de parameters moeten dus zodanig zijn dat de waarschijnlijkheid op de gevonden steekproefuitkomsten maximaal is.
+
+De MLE methode maximaliseert de kans dat $S$ effectief is.
+
+veel mensen hebben de neiging om aannemelijkheid en kans door elkaar te gebruiken, maar statistici maken onderscheid tussen de twee. Een Likelihood voor een statistisch model wordt gedefinieerd door dezelfde formule als de (kans)dichtheid, maar de rollen van de data $x$ en de parameter $\theta$ zijn verwisseld.
+
+$$L_x(\theta) = f_\theta(x)$$
+
+-   \$L_x(\theta) \$ - De Likelihood is een functie van de parameter $\theta$ voor vaste gegevens $x$.
+
+-   $f_\theta(x)$ - De dichtheid is een functie van de data $x$ voor vaste waarden van $\theta$.
+
+::: {.info data-latex=""}
+**Kleinste kwadratenmethode**
+
+Minimalisatie van de kleinste kwadraten is een andere veelgebruikte methode voor het schatten van parameterwaarden voor een model. Het blijkt dat wanneer wordt aangenomen dat het model Gaussiaans is, de MLE-schattingen equivalent zijn aan de kleinste-kwadratenmethode.
+:::
+
+## Bernoulli verdeling {#sec-likelihood-bernoulli}
+
+30 waarnemingen met uitkomst 1 (=succes) of 0 (= geen succes)
+
+> 1 1 1 0 1 0 1 1 1 1 0 1 0 1 0 1 1 1 1 1 0 0 1 1 1 1 0 1 1 1
+
+De succeskans van deze 30 waarnemingen = 22/30 = 0,7333. Wat is de MLE van de succeskans?
+
+Veronderstel dat we uitgaan dat van een succeskans 0,7. Dan is de kans op waarneming 1 gelijk aan 0,7 en de kans op waarneming 0 gelijk aan 0,3. De totale kans op deze 30 waarnemingen (de Likelihood) is dan het product van deze 30 afzonderlijke kansen. En omdat het product van kansen zorgt voor extreem kleine getallen, wordt meestal overgestapt op de natuurlijke logaritme van de kansen. Dan kun je i.p.v. het product de som nemen. De logaritme is een monotoon stijgende functie en de logaritme van een functie bereikt de maximum waarde op hetzelfde punt als de functie zelf.
+
+-   **Likelihood**: $P(x_1) * P(x_2) * P(x_3) ... * P(x_{30})$
+-   **Log-Likelihood**: $LN(P(x_1)) + LN(P(x_2)) + LN(P(x_3)) ... + LN(P(x_{30}))$
+
+In dit voorbeeld is bij een succeskans van 0,7 de Likelihood = $0,7^{22}\times 0,3^{8} = 2,565*10^{-8}$. Zo kun je ook voor andere succeskansen steeds de Likelihood (totale kans) uitrekenen. De MLE is dan die kans waarvoor de Likelihood maximaal is. Dit is een iteratief proces.
+
+In Excel kun je deze MLE met de *Oplosser* bepalen. Vanwege de zeer kleine waarden voor de Likelihood kan de *Oplosser* geen goed antwoord vinden. Bij de Log-Likelihood geeft de Oplosser als beste kans 0,7333. Dit is ook de theoretische waarde.
+
+In R kun je een Likelihood functie definieren voor dit experiment en dan met functie `optimize` het maximum vinden.
+
+```{r}
+# bereken dichtheid 22 keer succes bij 30 pogingen en kans op succe p.
+likelihood <- function(p) {
+  dbinom(22, 30, p)
+}
+
+optimize(f = likelihood, interval = c(0,1), maximum = TRUE)
+```
+
+## Normale verdeling {#sec-likelihood-normaal}
+
+Inspiratiebron: https://medium.com/@lorenzojcducv/maximum-likelihood-for-the-normal-distribution-966df16fd031
+
+Kans: $P(x|\mu,\sigma) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}(\frac{x - \mu}{\sigma})^2}$
+
+Voor het vinden van de optimale parameters voor het gemiddelde $\mu$ en de standaarddeviatie $sigma$ gebruik je de Likelihood functie
+
+Likelihood: $L(\mu,\sigma |x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}(\frac{x - \mu}{\sigma})^2}$
+
+::: {#exm-likelihood-1}
+**1 waarneming**
+
+Meting gewicht (gram) van 1 gloeilamp: 32
+
+Wat is de Likelihood voor een normale verdeling met $\mu=28$ en $\sigma =2$?
+
+$L(\mu=28,\sigma=2 |x=32) = \frac{1}{2\sqrt{2\pi}} e^{-\frac{1}{2}(\frac{32 - 28}{2})^2}$ = `r dnorm(x=32, mean=28, sd=2)`
+
+Zie de volgende tabel voor een aantal andere waarden van $\mu$.
+
+| $\mu$ | $\sigma$ | L                              |
+|:-----:|:--------:|:-------------------------------|
+|  28   |    2     | `r dnorm(x=32, mean=28, sd=2)` |
+|  29   |    2     | `r dnorm(x=32, mean=29, sd=2)` |
+|  30   |    2     | `r dnorm(x=32, mean=30, sd=2)` |
+|  31   |    2     | `r dnorm(x=32, mean=31, sd=2)` |
+|  32   |    2     | `r dnorm(x=32, mean=32, sd=2)` |
+|  33   |    2     | `r dnorm(x=32, mean=33, sd=2)` |
+|  34   |    2     | `r dnorm(x=32, mean=34, sd=2)` |
+
+De MLE voor $\mu$ wordt 32. Dit is een logische waarde, immers de uitkomst van de ene meting.
+:::
+
+::: {#exm-likelihood-2}
+**2 waarnemingen**
+
+Meting gewicht (gram) van 2 gloeilampen: 32 en 34
+
+Wat is de Likelihood voor een normale verdeling met $\mu=30$ en $\sigma =2$?
+
+De metingen zijn onafhankelijk van elkaar zodat het product van de afzonderlijke kansen kunt gebruiken.
+
+```{r echo=FALSE}
+L <- function(x1, x2, m, s) {
+	dnorm(x1,m,s) * dnorm(x2,m,s)
+}
+```
+
+$L(\mu=30,\sigma=2 |x=\{32, 34\}) = L(\mu=30,\sigma=2 |x=32) \times L(\mu=30,\sigma=2 |x=34)$ = `r L(32,34,30,2)`
+
+Zie de volgende tabel voor een aantal andere waarden van $\mu$.
+
+| $\mu$ | $\sigma$ | L                 |
+|:-----:|:--------:|:------------------|
+|  30   |    2     | `r L(32,34,30,2)` |
+|  31   |    2     | `r L(32,34,31,2)` |
+|  32   |    2     | `r L(32,34,32,2)` |
+|  33   |    2     | `r L(32,34,33,2)` |
+|  34   |    2     | `r L(32,34,34,2)` |
+|  35   |    2     | `r L(32,34,35,2)` |
+
+De MLE voor $\mu$ wordt nu 33, een logische waarde omdat dit het gemiddelde van de twee waarnemingen is.
+:::
+
+**n waarnemingen**
+
+In principe kun je de methode voor meerdere gegevenspunten uitbreiden. Je moet dan de afzonderlijke likelihood functies met elkaar vermenigvuldigen.
+
+$L(\mu,\sigma |x=\{x_1, x_2, ..., x_n\}) = L(\mu,\sigma |x_1) \times L(\mu,\sigma |x_2) \times ... \times L(\mu,\sigma |x_n)$
+
+$= \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}(\frac{x_1 - \mu}{\sigma})^2} \times ... \times \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}(\frac{x_n - \mu}{\sigma})^2}$
+
+Voor het bepalen van de MLE moet je twee afgeleides bepalen en gelijk aan 0 stellen:
+
+-   Afgeleide naar $\mu$, waarbij $\sigma$ als een constante behandeld wordt.
+-   Afgeleide naar $\sigma$, waarbij $\mu$ als een constante behandeld wordt.
+
+Het bepalen van de afgeleides gaat gemakkelijker via de logaritmes. De Log Likelihood functie wordt $LL(\mu,\sigma|x) =ln(L(\mu,\sigma |x=\{x_1, x_2, ..., x_n\}))$
+
+$LL(\mu,\sigma|x) = ln(\frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}(\frac{x_1 - \mu}{\sigma})^2}) + ...+ ln(\frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}(\frac{x_n - \mu}{\sigma})^2})$
+
+Beschouw de eerste term.
+
+$ln(\frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}(\frac{x_1 - \mu}{\sigma})^2}) = ln[(2\pi \sigma^2)^{-0.5}] -\frac{(x_1 - \mu)^2}{2\sigma^2}$
+
+$= -0.5ln(2\pi) - ln(\sigma) - \frac{(x_1 - \mu)^2}{2\sigma^2}$
+
+Wanneer je dit ook voor alle andere termen doet dan kun je de Log Likelihood functie omzetten in
+
+$LL(\mu,\sigma|x) = -\frac{n}{2}ln(2\pi) - n ln(\sigma) - \sum_{i=1}^{n}\frac{(x_i - \mu)^2}{2 \sigma^2}$
+
+**Afgeleide naar** $\mu$
+
+$\frac{\partial}{\partial \mu} LL(\mu,\sigma|x) = \sum_{i=1}^{n} \frac{x_i - \mu}{\sigma^2} = \frac{1}{\sigma^2}(\sum_{i=1}^{n}x_i -n\mu)$
+
+Gelijkstelling aan nul levert
+
+$\mu = \frac{1}{n}\sum_{i=1}^{n}x_i$
+
+De MLE voor $\mu$ is dus het gemiddelde van de waarnemingen.
+
+**Afgeleide naar** $\sigma$
+
+$\frac{\partial}{\partial \sigma} LL(\mu,\sigma|x) = -\frac{n}{\sigma} + \sum_{i=1}^{n} \frac{(x_i - \mu)^2}{\sigma^3}$
+
+Gelijkstelling aan nul levert.
+
+$\sum_{i=1}^{n} \frac{(x_i - \mu)^2}{\sigma^3} = \frac{n}{\sigma}$ ofwel
+
+$\sigma = \sqrt{\frac{\sum_{i=1}^{n}(x_i - \mu)^2}{n}}$
+
+De MLE voor $\sigma$ is dus de standaardafwijkingen van de waarnemingen.
+
+**functie nlm**
+
+De R-functie `nlm()` minimaliseert willekeurige functies geschreven in R. Voor het maximaliseren van de likelihood moet je als input de negatieve waarde van de log-likelihood gebruiken, immers minimaliseren van $-f$ komt overeen met het maximaliseren van $f$.

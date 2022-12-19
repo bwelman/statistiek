@@ -1,0 +1,170 @@
+---
+title: "Voorbeeld t-toetsing"
+author: "Ben Welman"
+date: '2022-03-07'
+output: html_document
+---
+
+Bron: <https://stat-methods.com/home/independent-samples-t-test-r-2/>
+
+In dit voorbeeld wordt getoetst of er een statistisch significant verschil is in de mijlen per gallon (mpg) van 4-cilinder auto's en 8-cilinder auto's.
+De data is in bestand `data/cars_ttest.csv` en bevat 24 waarnemingen van 3 variabelen: `Auto`, `mpg` en `cyl`.
+
++ onafhankelijke categorie variabele: `cyl` (4 0f 8 cilinders)
++ afhankelijke respons variabele: `mpg` (miles per gallon)
+
+Dit is een uitvoerig voorbeeld met controles op de aannames.
+
+```{r}
+dat <- read_csv("data/cars_ttest.csv")
+# Maak van variabele cyl een categorievariabele
+dat$cyl <- as.factor(dat$cyl)
+```
+
+## Beschrijvende statistieken {-}
+
+Beschrijvende statistieken worden niet alleen gebruikt om gegevens te beschrijven, maar zijn ook nuttig om te bepalen of er inconsistenties zijn en kunnen dienen om de volgende vragen te beantwoorden:
+
++ Zijn er ontbrekende data en zo ja hoeveel?
++ Zijn er mogelijke uitschieters?
++ Zijn de standaarddeviaties en standaardfoutwaarden groot ten opzichte van het gemiddelde?
++ In welk bereik vallen de waarden voor de variabelen?
+
+```{r}
+# Produceer beschrijvende statistieken van de responsvariabele (mpg) per groep
+dat %>% select(mpg, cyl) %>% group_by(cyl) %>% 
+  summarise(n = n(), 
+            mean = mean(mpg, na.rm = TRUE), 
+            sd = sd(mpg, na.rm = TRUE),
+            stderr = sd/sqrt(n), 
+            LCL = mean - qt(1 - (0.05 / 2), n - 1) * stderr,
+            UCL = mean + qt(1 - (0.05 / 2), n - 1) * stderr,
+            median=median(mpg, na.rm = TRUE),
+            min=min(mpg, na.rm = TRUE), 
+            max=max(mpg, na.rm = TRUE),
+            IQR=IQR(mpg, na.rm = TRUE))
+```
+
+Toelichting:
+
++ *cyl* -- Deze kolom identificeert de twee groepen (4 en 8 cilinders) die met elkaar vergeleken worden.
++ *n* -- Deze kolom geeft het aantal waarnemingen voor elke groep.
++ *mean* -- De gemiddelde waarde.
++ *sd* -- De standaarddeviatie.
++ *stderr* -- De standaardfout.
++ *LCL, UCL* -- De ondergrens (LCL) en bovengrens (UCL) van de betrouwbaarheidsintervallen (Confidence Level) voor het gemiddelde.
++ *median* -- De mediaan.
++ *min, max* -- De minimum- en maximumwaarde.
++ *IQR* -- De interkwartielrange.
+
+## Controle uitschieters {-}
+
+Maak boxplots en controleer visueel of er uitschieters zijn.
+
+```{r}
+ggplot(dat, aes(x = cyl, y = mpg, fill = cyl)) +
+  stat_boxplot(geom ="errorbar", width = 0.5) +
+  geom_boxplot(fill = "light blue") + 
+  stat_summary(fun = mean, geom = "point", shape = 10, size=3.5, color="black") + 
+  ggtitle("Boxplots van de 4 en 8 cilindergroepen") + 
+  theme_bw() + theme(legend.positio = "none")
+```
+
+De boxplot lijkt voor de 8-cilindergroep een uitschieter aan te geven, maar subjectief gezien onvoldoende bewijs om te suggereren dat er op een andere analysemethode moet worden overgestapt.
+
+## Controle normaliteit {-}
+
+Het testen van de normaliteit moet worden uitgevoerd met behulp van een Shapiro-Wilk-normaliteitstest (of gelijkwaardig) en een QQ-plot voor grote steekproeven.
+Vaak kunnen histogrammen ook nuttig zijn, vooral voor grote steekproeven.
+
+In dit voorbeeld wordt de functie `shapiro.test` gebruikt om een normaliteitstest voor elke cilindergroep te produceren.
+De nulhypothese van deze toets is dat de populatie normaal verdeeld is.
+Wanneer dus $p < \alpha$ wordt de nulhypothese verworpen en is er dus bewijs dat de gegevens niet normaal verdeeld zijn.
+
+```{r}
+dat %>%
+  group_by(cyl) %>%
+  summarise(`W Statistic` = shapiro.test(mpg)$statistic, `p-value` = shapiro.test(mpg)$p.value)
+```
+
+Toelichting:
+
++ *cyl* -- Deze kolom identificeert de twee groepen (4 en 8 cilinders) die met elkaar vergeleken worden.
++ *W Stat* -- De Shapiro-Wilk (W) toetsingsgrootheid.
++ *p-value* -- De p-waarde voor de toets for each test is provided. Een p-waarde \< 0.05 zou erop wijzen dat we de aanname van normaliteit moeten verwerpen. Omdat de p-waarden voor elke groep \> 0.05 zijn, mag je concluderen dat de gegevens normaal verdeeld zijn.
+
+Met functies uit het `qqplotr` pakket worden QQ-plots gemaakt.
+
+> Opm.: Moet toch ook met gewone qqplot kunnen?
+
+```{r}
+# library(qqplotr)
+ggplot(data = dat, mapping = aes(sample = mpg, color = cyl, fill = cyl)) +
+  stat_qq_band(alpha=0.5, conf=0.95, qtype=1, bandType = "ts") +
+  stat_qq_line(identity=TRUE) +
+  stat_qq_point(col="black") +
+  facet_wrap(~ cyl, scales = "free") +
+  labs(x = "Theoretische kwantielen", y = "Steekproef kwantielen") + theme_bw() 
+```
+
+De overgrote meerderheid van de punten moet de lijn volgen en binnen de gekromde 95% bootstrapped betrouwbaarheidsgrenzem blijven om als normaal verdeeld te worden beschouwd.
+
+De p-waarde van de Shapiro-Wilk-test is\> 0,05, en QQ-plot gegevenspunten vallen voor elke groep voornamelijk binnen de 95% betrouwbaarheidsgrenzen.
+Als dit echter iets anders was dan een theoretisch voorbeeld, zou je de waarnemingen 6 en 7 van de 8-cilindergroep verder moeten onderzoeken en mogelijk andere opties overwegen.
+
+## Controle gelijke varianties {-}
+
+Een manier om te toetsen of de varianties voor twee groepen gelijk zijn is via Levenne's test.
+Zie ook [hier](https://www.statology.org/levenes-test-r/)
+
+De nulhypothese is dat de varianties gelijk zijn.
+De syntax is *leveneTest(responsvariabele \~ groepvariabele, data = data)*
+
+```{r}
+# library(car) bevat leveneTest()
+#Perform Levene's Test of Equality of Variances
+lev1<-car::leveneTest(mpg ~ cyl, data=dat, center="mean")
+lev2<-car::leveneTest(mpg ~ cyl, data=dat, center="median")
+print(lev1)
+print(lev2)
+```
+
+Toelichting:
+
+-   *Df* -- De vrijheidsgraden die bij elke variabele en algemene fout horen.
+-   *F Value* -- De F-statistiek waarvoor de p-waarde wordt berekend.
+-   *Pr \> F* -- Levene's test voor gelijke varianties toont een p-waarde van 0.0172. Een significante p-waarde (P \< 0.05) wijst erop dat een Satterthwaite (ook wel bekend als Welch's) t-toets resultaten moeten worden gebuikt in plaats van pooled t-toets resultaten.
+
+Merk op dat de resultaten van deze test bepalen welke `var.equal`-vlag moet worden gebruikt in de R `t.test`-code.
+Als gelijke varianties worden aangenomen (P> 0,05), is de volgende code geschikt:
+
+`t.test(mpg ~ cyl, data=dat, var.equal=TRUE, na.rm=TRUE)`
+
+In dit voorbeeld is de conclusie dat er ongelijke varianties aanwezig zijn (p = 0,01804).
+Als gevolg hiervan is de volgende versie geschikt:
+
+`t.test(mpg ~ cyl, data=dat, var.equal=FALSE, na.rm=TRUE)`
+
+## t-toetsing {-}
+
+Tot dusver hebben we vastgesteld dat de gegevens voor elke cilindergroep normaal verdeeld zijn, de varianties ongelijk zijn en dat we geen grote invloedrijke uitschieters hebben.
+Onze volgende stap is om officieel een onafhankelijke steekproeftest uit te voeren om te bepalen of auto's met 4 en 8 cilinders significante verschillen vertonen tussen hun gemiddelde mpg-waarden.
+
+```{r}
+#Perform an Independent Samples T-test
+m1<-t.test(mpg ~ cyl, data=dat, var.equal=FALSE, na.rm=TRUE)
+print(m1)
+```
+
+Toelichting:
+
+-   *t* -- De t toetsingsgrootheid. Het is de verhouding tussen het gemiddelde van het verschil in gemiddelden en de standaardfout van het verschil.
+-   *df* -- het aantal vrijheidsgraden.
+-   *p-value* -- De p-waarde. Deze is hier 4.453e-06. Dus de nulhypothese wordt verworpen. Het gemiddelde mpg tussen de 4- en 8-cilindergroep is niet gelijk.
+-   *95% confidence interval* -- Het 95% betrouwbaarheidsinterval voor het gemiddeld verschil in mpg voor de twee groepen.
+-   *sample means* -- Het steekproefgemiddelde voor de twee groepen..
+
+## Conclusie {-}
+
+De nulhypothese dat de gemiddelde mpg voor de 4- en 8-cilindergroep gelijk zijn moet verworpen worden.
+Voor deze steekproef is het verschil in gemiddelde gelijk aan 27.05 - 15.1 = 11.95 mpg.

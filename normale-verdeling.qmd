@@ -1,0 +1,271 @@
+# Normale verdeling {#sec-normale-verdeling}
+
+```{r}
+#| results: "asis"
+#| echo: false
+source("_common.R")
+```
+
+## N(0,1) verdeling
+
+Met de basis R plot functie.
+
+```{r}
+# Maak een reeks van 1000 gelijk verdeelde getallen tussen -4 en 4 
+x <- seq(-4, 4, length=1000)
+
+# Maak een vector van waarden die de hoogte van de kansverdeling geeft voor elke waarde in x
+set.seed((1234))
+y <- dnorm(x)
+
+# Maak een spreidingsdiagram, verbind de punten via een lijn (type = "l")
+# maak aangepaste labels voor de X-as
+plot(x, y, type = "l", lwd = 2, axes = FALSE, xlab = "", ylab = "")
+axis(1, at = -3:3, labels = c("-3sd", "-2sd", "-1sd", "gemid", "1sd", "2sd", "3sd"))
+```
+
+Met de curve functie.
+
+```{r}
+curve(dnorm, -3.5, 3.5, lwd=2, axes = FALSE, xlab = "", ylab = "")
+axis(1, at = -3:3, labels = c("-3sd", "-2sd", "-1sd", "gemid", "1sd", "2sd", "3sd"))
+```
+
+Met ggplot functie.
+
+```{r}
+ggplot(data.frame(x = c(-4, 4)), aes(x = x)) +
+stat_function(fun = dnorm)
+```
+
+## N(50,5) verdeling
+
+```{r}
+#define population mean and standard deviation
+pop_gemid<- 50 # gemiddelde populatie
+pop_sd <- 5    # standaarddeviatie populatie
+
+# Maak een reeks van 1000 x-waarden
+x <- seq(-4, 4, length = 1000) * pop_sd + pop_gemid
+
+# Maak een vector van waarden voor de kansdichtheidsfunctie
+y <- dnorm(x, pop_gemid, pop_sd)
+
+# Teken grafiek met aangepaste X-as labels
+plot(x,y, type = "l", lwd = 2, axes = FALSE, xlab = "", ylab = "")
+sd_axis_bounds = 5
+axis_bounds <- seq(-sd_axis_bounds * pop_sd + pop_gemid,
+                    sd_axis_bounds * pop_sd + pop_gemid,
+                    by = pop_sd)
+axis(side = 1, at = axis_bounds, pos = 0)
+abline(v= pop_gemid)
+```
+
+### Arceringen
+
+**plot functie**
+
+Uitleg hierover op <https://r-coder.com/normal-distribution-r/.>
+
+```{r}
+x <- seq(-4, 4, length=100)
+y <- dnorm(x)
+
+# nieuw gebied voor inkleuring
+og <- min(x) # ondergrens
+bg <- 1      # bovengrens
+x2 <- seq(og, bg, length = 100)
+y2 <- dnorm(x2)
+
+plot(x, y, type = "l", lwd = 2) # Teken grafiek
+polygon(x = c(og,x2,bg), y=c(0,y2,0), col = "lightgrey")
+text(x=-1.5, y=0.05, labels = "tekst", adj = c(0,0))
+```
+
+**ggplot**
+
+uitleg: <https://github.com/tidyverse/ggplot2/issues/1528>
+
+```{r}
+ggplot(NULL, aes(c(-4,4))) +
+    geom_line(stat = "function", fun = dnorm, xlim=c(-4,4)) +
+    scale_x_continuous(limits = c(-4,4), breaks = seq(-4, 4, by = 1)) +
+    geom_area(stat = "function", fun = dnorm, fill = "grey80", xlim = c(-4, 1)) +
+    labs(x = "x", y = "f(x)") +
+    annotate(geom = "text", x = -1.0, y = 0.05, hjust = 0, label = "oppervlak")
+
+```
+
+#### Functie
+
+```{r}
+normal_area <- function(mean = 0, sd = 1, lb, ub, acolor = "lightgray", ...) {
+    x <- seq(mean - 3 * sd, mean + 3 * sd, length = 100) 
+    
+    if (missing(lb)) {
+       lb <- min(x)
+    }
+    if (missing(ub)) {
+        ub <- max(x)
+    }
+
+    x2 <- seq(lb, ub, length = 100)    
+    plot(x, dnorm(x, mean, sd), type = "n", ylab = "")
+   
+    y <- dnorm(x2, mean, sd)
+    polygon(c(lb, x2, ub), c(0, y, 0), col = acolor)
+    lines(x, dnorm(x, mean, sd), type = "l", ...)
+}
+```
+
+Argumenten functie:
+
+-   mean: gemiddelde
+-   sd: standaard deviatie
+-   lb: ondergrens gearceerde gebied
+-   ub: bovengrens gearceerde gebied
+-   acolor: kleur gearceerde gebied
+-   ...: additionele argumenten voor de lijngrafiek
+
+```{r}
+normal_area(mean = 0, sd = 1, lb = -1, ub = 2, lwd = 2)
+text(x = 0, y = 0.1, labels = "oppervlak")
+```
+
+### Divers
+
+**normaal**
+
+```{r}
+n <- 1000
+zs <- seq(-4, 4, length=n) # z-waarden
+set.seed(1234)
+nd <- dnorm(zs)            # dichtheid normale verdeling
+```
+
+functie voor aangepast histogram
+
+```{r}
+myhist<- function(x, ...){
+  hist(x, breaks = 30, xlab = "Z", ylab = "",  yaxt='n', freq = FALSE, ...)
+  lines(x = zs, y = nd, type = "l", col = "red", lwd = 2)
+}
+```
+
+```{r}
+set.seed(1234)
+gaussverdeling <- rnorm(1000)
+myhist(gaussverdeling, main = "Gauss verdeling")
+```
+
+De rode curve toont de Gauss-verdeling, terwijl het histogram de verdeling toont van 1000 willekeurige gegenereerde getallen tussen -4 en 4. Zoals je kunt zien, komt de bovenkant van de balken in het histogram mooi overeen met de Gauss-verdeling. Als onze dataset perfect normaal verdeeld zou zijn, zou het midden van de bovenkant van elke balk op de rode curve vallen.
+
+**rechts scheef**
+
+```{r}
+# scheef_recht is de dataset die vergeleken wordt met de Gauss verdeling
+scheef_rechts <- c(gaussverdeling[gaussverdeling > 0] * 2.5, gaussverdeling)
+myhist(scheef_rechts, main = "Rechts scheef", ylim = c(0, max(nd)))
+```
+
+Bij "rechts scheef", wat betekent worden de meeste gegevens verdeeld met een lange "staart" van gegevens die zich naar rechts uitstrekt.
+
+**links scheef**
+
+Bij "links scheef" strekt de staart zich naar links uit.
+
+```{r}
+# scheef_links is de dataset die vergeleken wordt met de Gauss verdeling
+scheef_links <- c(gaussverdeling[gaussverdeling < 0] * 2.5, gaussverdeling)
+myhist(scheef_links, main = "Links scheef", ylim = c(0, max(nd)))
+```
+
+De twee histogrammen zijn bijna spiegelbeelden van elkaar (over de Y-as).
+
+## Uitschieters
+
+-   [Outliers detection in R](https://statsandr.com/blog/outliers-detection-in-r/)
+-   [Detect outliers in a dataset by statistical methods (with R code)](https://www.reneshbedre.com/blog/find-outliers.html)
+
+## Test voor normale verdeling
+
+Bron: <https://datasciencetut.com/test-for-normal-distribution-in-r-quick-guide/>
+
+Test for Normal Distribution in R, Many statistical tests, such as correlation, regression, t-test, and analysis of variance (ANOVA), presuppose that the data has particular features.
+
+They demand that the data follow a normal or Gaussian distribution. These tests are known as parametric tests since their validity is determined by the data distribution.
+
+Normality and other assumptions made by these tests should be considered carefully in order to obtain meaningful results and interpretations from the research.
+
+We should do some preliminary tests before utilizing a parametric test to ensure that the test assumptions are met.
+
+Non-parametric tests are indicated in cases where the assumptions are violated.
+
+We'll go over how to check the data for normality using visual examination and significance tests.
+
+Veel statistische tests, zoals correlatie, regressie, t-test en variantieanalyse (ANOVA), veronderstellen dat de gegevens bepaalde kenmerken hebben. Ze eisen dat de gegevens een normale of Gauss-verdeling volgen. Deze tests staan bekend als parametrische tests omdat hun geldigheid wordt bepaald door de gegevensdistributie. Normaliteit en andere veronderstellingen die door deze tests worden gemaakt, moeten zorgvuldig worden overwogen om zinvolle resultaten en interpretaties van het onderzoek te verkrijgen. Je moet enkele voorbereidende tests doen voordat je een parametrische test kunt gebruiken om ervoor te zorgen dat aan de testaannames wordt voldaan.
+
+Niet-parametrische tests zijn aangewezen in gevallen waarin de aannames worden geschonden.
+
+Het controleren van de gegevens op normaliteit wordt hier gedaan met behulp van visueel onderzoek en significantietests.
+
+```{r}
+library(ggpubr)
+```
+
+```{r}
+data <- ToothGrowth
+head(data)
+```
+
+Gecontroleerd wordt `len`, de variabele voor de tandlengte, normaal verdeeld is.
+
+We kunnen de gegevensdistributie negeren en parametrisch testen gebruiken als de steekproefomvang groot genoeg is (n \> 30). De centrale limietstelling stelt dat als de steekproefomvang groot genoeg is (n \> 30), de steekproevenverdeling normaal zal zijn, ongeacht de verdelingsitems.
+
+Normaliteit kan visueel worden beoordeeld \[normale plots (histogram), Q-Q-plot (kwantiel-kwantielplot)\] of door significantietests om consistentie te verzekeren.
+
+### Visuale technieken
+
+Visuele controles op normaliteit omvatten de dichtheidsplot en de Q-Q-plot. De dichtheidsplot wordt gebruikt om te bepalen of de verdeling klokvormig is.
+
+```{r}
+ggpubr::ggdensity(data$len,
+          main = "Density plot",
+          xlab = "Tooth length")
+```
+
+De Q-Q-plot (ook bekend als de kwantiel-kwantielplot) geeft de relatie weer tussen een steekproef en de normale verdeling. Er is ook een referentielijn van 45 graden uitgezet.
+
+```{r}
+ggpubr::ggqqplot(data$len)
+```
+
+Je kunt ook de functie `qqPlot()` uit package `car` gebruiken.
+
+```{r}
+car::qqPlot(data$len)
+```
+
+Je kunt hieruit normaliteit afleiden omdat alle punten ongeveer langs deze referentielijn liggen.
+
+### Test voor normaliteit
+
+De beschrijving van visuele inspectie in de vorige sectie is vaak onjuist. Een significantietest kan worden gebruikt om te bepalen of gegevens een significante afwijking van normaal vertonen door de steekproefverdeling te vergelijken met een normale verdeling. De Kolmogorov-Smirnov (K-S) normaliteitstest en de Shapiro-test Wilk's zijn twee voorbeelden van normaliteitstests.
+
+"De steekproefverdeling is normaal", is de nulhypothese in deze tests. De verdeling is niet-normaal als de test significant is.
+
+Voor normaliteitstesten heeft Shapiro-benadering Wilk's vaak de voorkeur omdat deze meer kracht heeft dan K-S. Het is gebaseerd op de associatie van de gegevens met de relevante normale scores.
+
+Het is vermeldenswaard dat de normaliteitstest wordt beïnvloed door de steekproefomvang. De meeste kleine steekproeven slagen voor normaliteitstesten.
+
+Om de beste beslissing te nemen, is het cruciaal om visuele beoordeling en significantietests te combineren.
+
+De Shapiro-Wilk-test van normaliteit voor één variabele (univariate) kan worden uitgevoerd met de functie `shapiro.test()`.
+
+```{r}
+shapiro.test(data$len)
+```
+
+**Conclusie**
+
+De p-waarde \> 0,05 in de uitvoer geeft aan dat de gegevensverdeling niet wezenlijk verschilt van de normale verdeling. Anders gezegd, je kunt uitgaan van normaliteit.

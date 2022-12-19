@@ -1,0 +1,37 @@
+# Driehoekstest {#sec-driehoekstest}
+
+Bij het uitvoeren van brouwexperimenten varieer je één component (ingrediënt of werkwijze) en hou je alle andere componenten constant. Je maakt dan twee brouwsels (bieren) waarbij dan alleen die ene component verschilt. Daarna ga je met je zintuigen (proeven, ruiken, zien) onderzoeken of je dit verschil ook kunt waarnemen. Dit type van onderzoek wordt ook wel [sensorisch onderzoek](https://nl.wikipedia.org/wiki/Sensorisch_onderzoek) genoemd.
+
+Een manier om statistisch te toetsen of de verschillen significant zijn is door het uitvoeren van een zogenaamde driehoekstest. Een aantal personen, hier verder panelleden genoemd, krijgen in willekeurige volgorde drie producten voorgelegd, waarvan er twee gelijk zijn en de derde dus afwijkt. Elk panellid moet het afwijkende product aanwijzen. Als het panellid het verschil niet met zijn zintuigen kan vaststellen, moet deze dus gokken. De gokkans is dus 1/3.
+
+Voor het brouwexperiment kun je de volgende hypotheses formuleren:
+
+-   $H_0$: Er is geen verschil tussen de twee bieren. Dan is $p = \frac{1}{3}$ voor en goed antwoord en $p = \frac{2}{3}$ voor een fout antwoord.
+-   $H_1$: Er is een daadwerkelijk verschil tussen de twee bieren.
+
+Een geschikte toetsingsgrootheid is $\chi^2$ (Chi-kwadraat).
+
+::: {#exm-driehoekstest}
+60 proefpersonen krijgen elk drie bekers met bier voorgezet. Twee bieren zijn hetzelfde (bier A) en één bier verschilt (bier B). In twee bekers zit dus A en in een beker zit B. De vraag is welk bier afwijkend is van de andere twee. Er worden 24 goede antwoorden en 36 foute antwoorden waargenomen.
+
+Voor de analyse wordt een chi-kwadraattoets uitgevoerd met $\alpha = 0,05$.
+
+| Antwoord | Waargenomen ($O_i$) |  Verwacht ($E_i$)   | $(O_i - E_i)^2$ | $\frac{(O_i - E_i)^2}{E_i}$ |
+|:------------:|:------------:|:------------:|:------------:|:---------------:|
+|   goed   |        $24$         | $60*\frac{1}{3}=20$ |      $16$       |   $\frac{16}{20} = 0,80$    |
+|   fout   |        $36$         | $60*\frac{2}{3}=40$ |      $16$       |   $\frac{16}{40} = 0,40$    |
+|   som    |        $60$         |        $60$         |                 |           $1,20$            |
+
+Dus $\chi^2=1,20$ en het aantal vrijheidsgraden is $n-1 = 2-1 = 1$.
+
+De grens voor het 95% gebied van een $\chi^2[1]$ verdeling is `r qchisq(p=0.95, df=1)`.
+
+De berekende waarde van 1,20 ligt in het 95% gebied, dus de nulhypothese wordt niet verworpen, er is dus geen significant verschil tussen de bieren vastgesteld.
+
+De driehoekstest kan ook in R uitgevoerd worden met de functie `SensoMineR::triangle.pair.test()`
+
+```{r}
+SensoMineR::triangle.pair.test(nb.good = 24, nb.answer = 60)
+```
+
+:::

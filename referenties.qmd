@@ -1,0 +1,53 @@
+# Referenties {#sec-referenties}
+
+-   [6 Common Probability Distributions every data science professional should know, Analytics Vidhya, 2017-09-18](https://www.analyticsvidhya.com/blog/2017/09/6-probability-distributions-data-science/)
+
+-   [Probability Distributions in R (Stat 5101, Geyer)](http://www.stat.umn.edu/geyer/old/5101/rlook.html)
+
+-   [Understanding Data, Thomas Hopper, 2017-06-19](https://www.r-bloggers.com/understanding-data/)
+
+-   "Statistiek om mee te werken", A. Buijs
+
+**Driehoekstest**
+
+-   [Wikipedia - Discrimination testing](https://en.wikipedia.org/wiki/Discrimination~testing)
+-   [About Triangle Testing](https://www.experimentalbrew.com/experiments/about~triangle~testing)
+-   [Sensory evaluation with the triangle test](http://onbrewing.com/triangle-test/)
+-   [A shiny new triangle test calculator](http://onbrewing.com/a-new-triangle-test-calculator/)
+
+**Maximum Likelihood**
+
+-   [An Introductory Guide to Maximum Likelihood Estimation with a case study in R](https://www.analyticsvidhya.com/blog/2018/07/introductory-guide-maximum-likelihood-estimation-case-study-r/)
+-   [Maximum Likelihood](https://www.r-bloggers.com/maximum-likelihood/)
+-   [Doing Maximum Likelihood Estimation by Hand in R](http://www.johnmyleswhite.com/notebook/2010/04/21/doing-maximum-likelihood-estimation-by-hand-in-r/)
+-   [Fitting a Model by Maximum Likelihood](https://datawookie.netlify.com/blog/2013/08/fitting-a-model-by-maximum-likelihood/)
+-   [Maximum Likelihood for the Normal Distribution](https://medium.com/@lorenzojcducv/maximum-likelihood-for-the-normal-distribution-966df16fd031)
+-   [Probability concepts explained: Maximum likelihood estimation](https://towardsdatascience.com/probability-concepts-explained-maximum-likelihood-estimation-c7b4342fdbb1)
+
+**Data splitsen**
+
+-   [The caret package, Max Kuhn](https://topepo.github.io/caret/index.html)
+
+-   [Tutorial to prepare train and test set using dataPreparation](https://cran.r-project.org/web/packages/dataPreparation/vignettes/train_test_prep.html)
+
+**Kernel Density Estimation**
+
+-   "Data Analysis with Open Source Tools", Philipp Janert, Chapter 2
+
+-   [Density estimation in R, Henry Deng and Hadley Wickham](http://vita.had.co.nz/papers/density-estimation.pdf)
+
+-   [Kernel density estimation in R](https://math.unm.edu/~james/w6b.pdf)
+
+-   [Animating kernel density estimators](https://albert-rapp.de/post/visualize-kernel-density-estimation/), leuk en leerzaam
+
+-   [Kernel Density Estimation, Real Statistics](https://www.real-statistics.com/distribution-fitting/kernel-density-estimation/), Excel
+
+-   [Kernel dichtheid schatting - Kernel density estimation Kernel dichtheid schatting](https://nl.abcdef.wiki/wiki/Kernel_density_estimation), van Wikipedia
+
+-   [Continue stochast](http://info.math4all.nl/MathAdoreOpgaven/vd-b51-print.html), over kansdichtheidsfuncties
+
+-   [Exploratory Data Analysis: Kernel Density Estimation in R on Ozone Pollution Data in New York and Ozonopolis](https://chemicalstatistician.wordpress.com/2013/06/09/exploratory-data-analysis-kernel-density-estimation-in-r-on-ozone-pollution-data-in-new-york-and-ozonopolis/)
+
+-   [Create Kernel Density Plot in R](https://statisticsglobe.com/kernel-density-plot-in-base-r), tutorial, 7 voorbeelden, density() functie
+
+-   ["Kernel density estimation" is a convolution of what?](https://stats.stackexchange.com/questions/73623/kernel-density-estimation-is-a-convolution-of-what)

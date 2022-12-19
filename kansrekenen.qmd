@@ -1,0 +1,104 @@
+# Kansrekening {#sec-kansrekening}
+
+Bij kansvraagstukken spelen volgordes een belangrijke rol. De pakketten `combinat` en `gtools` hebben een aantal functies voor het berekenen van mogelijke volgordes.
+
+## Faculteit {#sec-faculteit}
+
+Een *faculteit* kun je berekenen met de functie `prod(1:n)`, maar ook met de speciale functie `factorial(n)`.
+
+::: {#exm-faculteit}
+**Berekening 6!**
+
+```{r}
+prod(1:6)
+factorial(6)
+```
+
+:::
+
+## Permutaties {#sec-permutaties}
+
+Het aantal permutaties is het aantal manieren waarop je een aantal elementen op volgorde kunt leggen. Het aantal mogelijke permutaties van $n$ elementen is gelijk aan $n!$. De mogelijke permutaties kunnen bepaald worden met functie `permn()` in `combinat` package
+
+::: {#exm-permutaties}
+**Permutaties van drie kleuren**
+
+```{r}
+kleuren <- c("rood", "wit", "blauw")
+n <- length(kleuren)
+factorial(n)          # Aantal permutaties
+combinat::permn(kleuren)        # Mogelijke permutaties
+```
+
+:::
+
+## Variaties {#sec-variaties}
+
+Het aantal variaties van $k$ elementen uit een totaal van $n$ elementen is het aantal verschillende volgorden van $k$ elementen uit $n$ elementen.
+
+Aantal variaties = $\frac{n!}{(n-k)!}$
+
+::: {#exm-variaties}
+Uit een vereniging van 12 leden moet een bestuur van 2 leden (voorzitter en penningmeester) gekozen worden. Hoeveel verschillende besturen zijn mogelijk? let er op dat een bestuur van voorzitter A en penningmeester B een ander bestuur is dan voorzitter B en penningmeester A.
+
+Dit is het aantal variaties van 2 uit 12 = $\frac{12!}{(12-2)!} = 11*12 = 132$
+:::
+
+## Combinaties {#sec-combinaties}
+
+Het aantal combinaties is het aantal verschillende groepen van $k$ elementen uit een totaal van $n$ elementen is $\frac{n!}{(n-k)!k!}$. Dit heet ook wel *n over k*. De volgorde binnen de groep is niet van belang. Hiervoor R een eigen functie `choose(n,k)`.
+
+::: {#exm-combinaties}
+Hoeveel combinaties van twee letters uit een totaal van 4 letters (A,B,C,D) zijn mogelijk? Nu doet de onderlinge volgorde er niet toe, AB is hetzelfde als BA.
+
+```{r}
+# via faculteiten
+factorial(4)/(factorial(2)*factorial(4-2))
+# via functie
+choose(4,2)
+```
+
+De mogelijke combinaties zelf kunnen bepaald worden met de functie `combn()`.
+
+```{r}
+x <- LETTERS[1:4]
+x
+combn(x, 2)
+```
+
+:::
+
+## Aantal groepen met teruglegging {#sec-groepen}
+
+Als een element dat gekozen is bij een trekking, de volgende keer weer kan verschijnen, dan wordt dat trekken met teruglegging genoemd.
+
+Aantal groepen van $k$ elementen uit $n$ elementen met teruglegging = $n^k$.
+
+::: {#exm-groepen}
+Een persoon heeft twee letters als initialen, hoeveel mogelijkheden zijn er? Let er op dat AB en BA verschillende gevallen zijn.
+
+Aantal groepen = $26^2 = 676$
+:::
+
+## Notaties {#sec-notaties}
+
+De letter $P$ wordt gebruikt om de kans (Probability) aan te geven.
+
+Voorbeelden voor een spel van 52 speelkaarten.
+
+-   $P(hartenaas) = \frac{1}{52}$
+-   $P(rood) = \frac{26}{52} = \frac{1}{2}$
+-   $P(aas) = \frac{4}{52} = \frac{1}{13}$
+-   $P(rood EN aas) = P(rood) * P(aas) = \frac{1}{2} * \frac{1}{13} = \frac{1}{26}$
+
+**Voorwaardelijke kans**
+
+Als A en B twee gebeurtenissen zijn, wordt de voorwaardelijke kans dat A zich voordoet, gegeven dat B heeft plaatsgevonden, geschreven als $P(A|B)$.
+
+Zo kun je de kans op een aas, gegeven dat er een rode kaart is getrokken, weergeven als $P(aas|rood)$. Deze kans is $\frac{2}{26} = \frac{1}{13}$. Immers er zijn 26 rode kaarten waaronder 2 azen.
+
+$$P(A|B) = \frac{P(A \cap B)}{P(B)} \text{ of } P(A \cap B) = P(A|B) \times P(B)$$
+
+**Onafhankelijke gebeurtenissen**
+
+Bij onafhankelijke gebeurtenissen A (worp met munt) en B (worp met dobbelsteen) is $P(A|B) = P(A)$. In dat geval is $P(A \cap B) = P(A) \times P(B)$, dus het product van de individuele kansen.

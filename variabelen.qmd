@@ -1,0 +1,80 @@
+# Variabelen {#sec-variabelen}
+
+## Soorten variabelen {#sec-var-soort}
+
+-   kwantitatieve variabele
+    -   wordt numeriek gemeten
+    -   rekenkundige bewerkingen zijn mogelijk
+    -   continu of discreet
+-   kwalitatieve variabele
+    -   wordt niet numeriek gemeten, elke waarde heet ook wel categorie
+    -   geen rekenkundige bewerkingen, wel aantallen tellen per categorie
+
+## Meetniveaus (schalen) {#sec-var-meetniveau}
+
+In de statistiek worden variabelen meestal in 4 meetniveaus (schalen) ingedeeld: Nominaal, Ordinaal, Interval en Ratio. het meetniveau van een variabele is van belang voor wat je er mee mag doen.
+
+### Nominaal {.unnumbered}
+
+De gegevens zijn kwalitatief of beschrijvend. Voorbeelden: geslacht, nationaliteit, godsdienst, woonplaats, burgerlijke staat. De waarden van de variabelen worden ook wel **categorien** genoemd. Ze hebben alleen verschillende namen (naam in het Latijn is *nomen*), getalswaarden hebben geen betekenis als numerieke waarde (je kunt er niet mee rekenen). De waarden hebben geen logische volgorde. Voorbeelden: postcode, geslacht, nationaliteit, godsdienst, ...
+
+### Ordinaal {.unnumbered}
+
+De gegevens zijn kwalitatief en hebben een logische volgorde, een bepaalde ordening. Voorbeelden: restaurantclassificatie (aantal sterren), enqu?tevragen (*Likertschalen*: 1=zeer goed, 2=goed, ...), plaats in wedstrijduitslag (1, 2, 3, ...). De waarden van de variabelen hebben wel een logische volgorde, je kunt ze bijvoorbeeld sorteren van groot naar klein. Met de waarden kun je geen rekenkundige bewerkingen uitvoeren. En uit de grootte van de verschillen kun je geen conclusies trekken, bijvoorbeeld 2 sterren is twee keer zo goed als 1 ster.
+
+### Interval {.unnumbered}
+
+De gegevens zijn kwantitatief, maar hebben geen natuurlijk nulpunt, de keuze van een nulpunt is arbitrair. Het verschil tussen de waarden heeft wel betekenis. Voorbeelden: kloktijd, Celsius temperatuur. Het verschil tussen 7:00 uur en 9: uur is even groot als het verschil tussen 15:00 uur en 17:00 uur. Je kunt echter niet zeggen Om 4 uur is het twee keer zo laat als om 2 uur, 24^o^C is 2 keer zo warm als 12^o^C. Wel is het verschil tussen de waarden van belang en significant. Sommige rekenkundige bewerkingen kun je wel uitvoeren zoals, optellen, aftrekken, gemiddelde bepalen. Voorbeelden: datum, jaartal, temperatuur (C en F), ...
+
+### Ratio {.unnumbered}
+
+De gegevens zijn kwantitatief en hebben een natuurlijk nulpunt. Voorbeelden: inkomen, uitgaven, gewicht, lengte. Een ratiovariabele meet dus de omvang van de variabele. Allerlei rekenkundige bewerkingen kunnen worden toegepast. Voorbeelden: lengte, massa, snelheid, temperatuur (K) ...
+
+## Statistische bewerkingen {#sec-var-bewerkingen}
+
+-   **Nominaal**: modus, frequentie, chikwadraat, cluster analyse
+
+-   **Ordinaal**: mediaan, Kruskal-Wallis, rangorde correlatie, non-parametrische toetsen
+
+-   **Interval**: rekenkundig gemiddelde, correlatie, regressie, anova (soms), factor analyse, sommige parametrische toetsen
+
+-   **Ratio**: geometrisch en harmonisch gemiddelde, anova, regressie, correlatiecoefficient
+
+**R-Functies beschrijvende statistiek**
+
+| Functie     | Toelichting                                     |
+|:------------|:------------------------------------------------|
+| mean(x)     | gemiddelde                                      |
+| sd(x)       | standaarddeviatie                               |
+| var(x)      | variantie                                       |
+| median(x)   | mediaan                                         |
+| IQR(x)      | Interkwartiel reeks                             |
+| quantile(x) | kwartiel                                        |
+| summary(x)  | samenvatting (minimum, maximum, median, Q1, Q3) |
+| table(x)    | Frequentietabel                                 |
+
+## R variabelen en gegevenstypes {#sec-var-r}
+
+In de praktijk wordt meer met gegevenstypes gewerkt dan met meetniveaus. De belangrijkste types waarmee gewerkt wordt zijn:
+
+-   numeriek
+-   complex
+-   integer
+-   logical
+-   character
+
+Types variabelen in R
+
+De voorgaande gegevenstypes kunnen opgeslagen worden in verschillende types variabelen in R. De belangrijkste zijn:
+
+-   vector
+-   factor
+-   array
+-   matrix
+-   list
+-   data.frame
+-   tibble
+
+Daarnaast nog:
+
+-   Date/Time, afhankelijk van hoe gemeten wordt kunnen deze zowel discreet als continu zijn. Deze variabelen worden als een apart gegevenstype behandeld. Brengt complicaties mee in de vorm van schrikkeljaren en tijdzones. Het gegevenstype van een variabele kan opgevraagd worden met de functie class().

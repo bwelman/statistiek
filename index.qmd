@@ -1,0 +1,5 @@
+# Inleiding {.unnumbered}
+
+Dit boek bevat door mij verzamelde notities over het omgaan met statistiek in R.
+
+Veel voorbeelden zijn afkomstig van internet of uit diverse boeken.

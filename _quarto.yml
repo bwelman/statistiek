@@ -1,0 +1,52 @@
+project:
+  type: book
+
+book:
+  title: "Statistiek met R"
+  author: "Ben Welman"
+  date: today
+  date-format: long
+  chapters:
+    - index.qmd
+    - kansrekenen.qmd
+    - kansverdelingen.qmd
+    - variabelen.qmd
+    - toetsen.qmd
+    - z-toets.qmd
+    - t-toets.qmd
+    - f-toets.qmd
+    - chikwadraat.qmd
+    - driehoekstest.qmd
+    - likelihood.qmd
+    - eda.qmd
+    - datasplit.qmd
+    - kde.qmd
+    - referenties.qmd
+  appendices:
+    - normale-verdeling.qmd
+  
+lang: nl
+
+execute:
+  freeze: auto
+
+format:
+  html:
+    theme: 
+      - flatly
+      - custom.scss
+    fig-width: 6
+    fig-asp: 0.618
+    code-fold: false
+    link-external-icon: true
+    link-external-newwindow: true
+
+
+knitr:
+  opts_chunk:
+    echo: true
+    warning: false
+    message: false
+    cache: false
+
+editor: visual
