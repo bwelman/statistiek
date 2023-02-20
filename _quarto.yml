@@ -16,6 +16,7 @@ book:
     - t-toets.qmd
     - f-toets.qmd
     - chikwadraat.qmd
+    - kruskal-wallis.qmd
     - driehoekstest.qmd
     - likelihood.qmd
     - eda.qmd
@@ -33,7 +34,7 @@ execute:
 format:
   html:
     theme: 
-      - flatly
+      - cosmo
       - custom.scss
     fig-width: 6
     fig-asp: 0.618
@@ -48,5 +49,3 @@ knitr:
     warning: false
     message: false
     cache: false
-
-editor: visual

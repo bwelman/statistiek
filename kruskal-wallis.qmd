@@ -1,0 +1,91 @@
+# Kruskal-Wallistoets {#sec-kruskalwallis}
+
+De Kruskal-Wallistoets is een verdelingsvrije toets, wat inhoudt dat er geen veronderstellingen worden gemaakt over de onderhavige verdelingen. Er wordt getoetst of er verschil is tussen de mediaanwaarden van de verdelingen waaruit twee of meer steekproeven afkomstig zijn.
+
+Deze toets wordt gebruikt wanneer de gegevens niet normaal verdeeld zijn of wanneer de steekproefomvang klein is. De Kruskal-Wallistoets heeft de voorkeur boven de traditionele eenrichtings-ANOVA omdat deze niet-parametrisch is en niet berust op de aanname van normaliteit.
+
+De Kruskal-Wallis-test vergelijkt de mediaanwaarden van twee of meer onafhankelijke groepen om te zien of ze een statistisch significant verschil hebben. De rangnummers van de waarnemingen wordt gebruikt om de teststatistiek te berekenen in plaats van de werkelijke waarden. Als gevolg hiervan wordt de Kruskal-Wallis-test geclassificeerd als een niet-parametrische test.
+
+**Hypotheses**
+
+-   $H_0$ : Er is geen significant verschil tussen de mediaanwaarden van de groepen. Dus eigenlijk dat de steekproeven getrokken zijn uit verdelingen (populaties) met dezelfde "ligging".
+
+-   $H_1$ : Er is een significant verschil tussen de mediaanwaarden van de groepen.
+
+De toetsingsgrootheid wordt berekend met behulp van de rangnummers van de waarnemingen en vergeleken met een kritische waarde van een chi-kwadraatverdeling. Als de berekende waarde van de toetsingsgrootheid groter is dan de kritische waarde, wordt de nulhypothese verworpen. Je kunt dan concluderen dat er een significant verschil is tussen de mediaanwaarden van de groepen.
+
+**Vereisten**
+
+Het dataframe met de gegevens moet een kolom hebben met waarden voor de soort groep (onafhankelijke variabele) en een kolom met de meetwaarden (afhankelijke variabele). De groepen moeten onafhankelijk zijn en gelijke varianties hebben. Het is belangrijk dat je dit controleert voordat je de toets uitvoert.
+
+**R syntax**
+
+De toets kan uitgevoerd worden met de functie `kruskal.test()` welke standaard in R zit. De gegevens kunnen als twee vectoren worden aangeboden of in de vorm van een dataframe of matrix. De syntax voor de laatste vorm is
+
+`kruskal.test(formula, data, ...)`
+
+-   formula in de vorm `afhankelijke variabele ~ onafhankelijke variabele`.
+-   data is het dataframe
+-   de variabele voor de groep moet een factor zijn
+
+::: {.callout-note appearance="simple"}
+Een andere optie is de functie `kruskal_test()` uit package `coin`.
+:::
+
+## Voorbeeld
+
+Als voorbeeld een dataset met gesimuleerde gegevens die scheef en onevenwichtig zijn. Er worden drie gegevensgroepen gegenereerd met verschillende gemiddelden en standaarddeviaties om scheve verdelingen te simuleren. De gegevens worden met `rnorm()` gegenereerd en vervolgens gekwadrateerd om positieve waarden te krijgen.
+
+```{r}
+set.seed(323)    # voor een reproduceerbaar voorbeeld
+waarneming <- c(rnorm(100, mean = 107, sd = 29)^2,  # groep 1
+                rnorm(79, mean = 89, sd = 17)^2,    # groep 2
+                rnorm(66, mean = 68, sd = 35)^2)    # groep 3
+groep <- rep(c(1,2,3), c(100, 79, 66))              # nummers groep
+groep <- factor(groep)
+df <- data.frame(waarneming, groep)
+```
+
+Allereerst worden de gegevens gevisualiseerd in de vorm van een histogrammen om de verdeling te inspecteren. Met `facet_wrap()` worden deze per groep gescheiden.
+
+```{r}
+library(ggplot2)
+ggplot(df, aes(x = waarneming, fill = groep)) + 
+    geom_histogram(alpha = 0.5, position = "dodge") + 
+    facet_wrap(~groep, ncol = 3) + 
+    labs(x = "Data", y = "Frequentie") + 
+    scale_fill_brewer(palette = "Paired") + 
+    theme_bw()
+```
+
+Het histogram laat zien dat de gegevens niet normaal verdeeld zijn en scheef zijn, waarbij de gemiddelden en standaarddeviaties van de verschillende groepen verschillen. Het kan echter moeilijk zijn om histogrammen te interpreteren. Om de gegevens te testen op het al dan niet normaal verdeeld zijn kun je de populaire Shapiro-Wilks test gebruiken.
+
+```{r}
+shapiro.test(df$waarneming)
+```
+
+De p-waarde voor de test is veel kleiner dan 0,05, wat aangeeft dat de gegevens niet normaal verdeeld zijn. Dit ondersteunt de visuele interpretatie van de gegevens van de ggplot2-plot, waaruit bleek dat deze scheef en onevenwichtig is.
+
+Omdat de gegevens niet normaal verdeeld zijn kan de Kruskal-Wallistest worden gebruikt.
+
+```{r}
+kruskal.test(waarneming ~ groep, data = df)
+```
+
+De p-waarde is hier erg klein, wat aangeeft dat de nulhypothese verworpen moet worden en dat dus de mediaanwaarden van de groepen significant verschillen.
+
+De resultaten van de Krusl-Wallistest kun je nog eens visualiseren via een boxplot.
+
+```{r}
+ggplot(df, aes(x=groep, y=waarneming, group = groep)) +
+    geom_boxplot() +
+    ggtitle("Boxplot van de waarnemingen per groep")
+```
+
+In de boxplot is ook goed te zien dat de mediaanwaarden van de groep behoorlijk van elkaar verschillen.
+
+
+
+
+
+

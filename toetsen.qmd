@@ -10,7 +10,7 @@ Als *alternatieve hypothese*, aangeduid met $H_1$, ga je uit van de veronderstel
 
 ## Toetsingsgrootheid {#sec-toetsen-toetsingsgrootheid}
 
-Na het formuleren van de hypothesen formuleer je een *toetsingsgrootheid*. Deze moet de informatie uit de steekproef samenvatten in een getal dat als maatstaf kan functioneren om de nulhypothese al dan niet te verwerpen. Veel gebruikte toetsingsgrootheden zijn: (steekproef)gemiddelde, (steekproef)fractie en (steekproef)variantie.
+Na het formuleren van de hypothesen formuleer je een *toetsingsgrootheid* (teststatistiek). Deze moet de informatie uit de steekproef samenvatten in een getal dat als maatstaf kan functioneren om de nulhypothese al dan niet te verwerpen. Veel gebruikte toetsingsgrootheden zijn: (steekproef)gemiddelde, (steekproef)fractie en (steekproef)variantie.
 
 ## Kansverdeling toetsingsgrootheid onder $H_0$ {#sec-toetsen-kansverdeling}
 
@@ -35,7 +35,7 @@ Het kritieke gebied volgt uit de kansverdeling van de toetsingsgrootheid en kan 
 
 ## p-waarde {#sec-toetsen-pwaarde}
 
-Als alternatief voor de bepaling van het kritieke gebied kan ook de *overschrijdingskans* bepaald worden van de gevonden waarde van de toetsingsgrootheid. Deze overschrijdingskans wordt meestal de *p-waarde* genoemd. Hoe kleiner de p-waarde, des te extremer de uitkomst.
+Als alternatief voor de bepaling van het kritieke gebied kan ook de *overschrijdingskans* bepaald worden van de gevonden waarde van de toetsingsgrootheid. Deze overschrijdingskans wordt meestal de *p-waarde* genoemd. Hoe kleiner de p-waarde, des te extremer de uitkomst. Wanneer de p-waarde kleiner is dan het *significantieniveau* dan is de uitkomst extreem genoeg om de nulhypothese te werpen.
 
 ::: callout-note
 Om de p-waarde te bepalen moet je over de steekproefresultaten beschikken.
